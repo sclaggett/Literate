@@ -106,9 +106,9 @@ void getCodeblocks(Program p,
         foreach (s; c.sections) {
             foreach (b; s.blocks) {
                 bool isRootBlock = false;
-                if (b.isCodeblock) {
+                if ((b.blockType == BlockType.CODE) || (b.blockType == BlockType.FILE)) {
                     Block copy = b.dup();
-                    auto fileMatch = matchAll(copy.name, regex(".*\\.\\w+"));
+                    auto fileMatch = b.blockType == BlockType.FILE;
                     auto quoteMatch = matchAll(copy.name, regex("^\".*\"$"));
                     if (fileMatch || quoteMatch) {
                         copy.isRootBlock = true;

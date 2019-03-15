@@ -94,6 +94,7 @@ enum Modifier {
     noHeader, // Don't print the block header
     additive, // +=
     redef, // :=
+    executable, // +x
 }
 ---
 

@@ -11,19 +11,20 @@ This is the source for tangle. This compiles code from a `.lit` file into runnab
 We do this by going through all the codeblocks, and storing them in an associative array.
 Then we apply additions and redefinitions so that the array just contains the code for
 each codeblock (indexed with a string: the codeblock name). Then we find the root codeblocks,
-i.e. the ones that are a filename, and recursively parse all the codeblocks, following each
-link and adding in the code for it.
+i.e. the that are of type BlockType.FILE, and recursively parse all the codeblocks,
+following each link and adding in the code for it.
 
 Here is an overview of the file:
 
 --- tangler.d
 import globals;
-import std.string;
+import std.string: lastIndexOf, split, strip;
 import std.stdio;
 import std.algorithm: canFind;
 import parser;
 import util;
-import std.conv: to;
+import std.conv: to, octal;
+import std.file: exists, mkdirRecurse, setAttributes;
 
 void tangle(Program p) {
     @{tangle function}
@@ -69,14 +70,38 @@ the code.
 
 --- tangle function +=
 foreach (b; rootCodeblocks) {
-    string filename = b.name;
+    @{Prepare file paths}
     File f;
-    if (!noOutput)
-        f = File(outDir ~ "/" ~ filename, "w");
+    if (!noOutput) {
+        if ((parentDir.length > 0) && !exists(parentDir)) {
+            mkdirRecurse(parentDir);
+        }
+        f = File(fullPath, "w");
+    }
 
     writeCode(codeblocks, b.name, f, filename, "");
-    if (!noOutput)
+    if (!noOutput) {
         f.close();
+        if (b.modifiers.canFind(Modifier.executable)) {
+            setAttributes(fullPath, octal!755);
+        }
+    }
+}
+---
+
+Three strings need to be created that describe the output file: (1) the filename from
+the file block, (2) the full path created by combining the output directory with the
+filename, and (3) the parent directory extracted from the full path. Note that the
+parent directory will only differ from the output directory if the filename contains
+a subdirectory.
+
+--- Prepare file paths
+string filename = b.name;
+string fullPath = outDir ~ "/" ~ filename;
+string parentDir = "";
+long lastIndex = lastIndexOf(fullPath, '/');
+if (lastIndex != -1) {
+    parentDir = strip(fullPath[0..lastIndex]);
 }
 ---
 

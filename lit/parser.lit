@@ -67,7 +67,7 @@ I'll quickly list the imports here.
 import globals;
 import std.stdio;
 import util;
-import std.string: split, endsWith, startsWith, chomp, replace, strip, format;
+import std.string: split, endsWith, startsWith, chomp, replace, strip, stripRight, format;
 import std.algorithm: canFind;
 import std.regex: matchAll, matchFirst, regex, ctRegex, splitter;
 import std.conv;
@@ -165,17 +165,26 @@ class Section {
 
 @s The Block Class
 
-A block is more interesting. It can either be a block of code, or a block of prose, so
-it has a boolean which represents what type it is. It also stores a start line. If it
-is a code block, it also has a name. Finally, it stores an array of lines, and has a function
-called `text()` which just returns the string of the text it contains. A block also contains
-a `codeType` and a `commentString`.
+A block is more interesting. It can either be a code, file, or prose block, so use an
+enumeration to represents what type it is. It also stores a start line. Code and file
+block have names and file blocks have a flag to indicate if they are executable or not.
+Finally, it stores an array of lines, and has a function called `text()` which just
+returns the string of the text it contains. A block also contains a `codeType` and a
+`commentString`.
 
 --- Block class
+enum BlockType {
+    UNDEFINED,
+    CODE,
+    FILE,
+    PROSE
+} 
+
 class Block {
     public Line startLine;
     public string name;
-    public bool isCodeblock;
+    public BlockType blockType;
+    public bool makeExecutable;
     public bool isRootBlock;
     public Line[] lines;
 
@@ -185,6 +194,7 @@ class Block {
     public Modifier[] modifiers;
 
     this() {
+        blockType = BlockType.UNDEFINED;
         lines = [];
         modifiers = [];
     }
@@ -201,7 +211,7 @@ class Block {
         Block b = new Block();
         b.startLine = startLine;
         b.name = name;
-        b.isCodeblock = isCodeblock;
+        b.blockType = blockType;
         b.codeType = codeType;
         b.commentString = commentString;
         b.modifiers = modifiers;
@@ -383,7 +393,7 @@ Chapter parseChapter(Chapter chapter, string src) {
         auto lineNum = lineObj.lineNum;
         auto line = lineObj.text;
 
-        if (strip(line).startsWith("//") && !inCodeblock) {
+        if (strip(line).startsWith("//") && !inCodeOrFileBlock) {
             continue;
         }
 
@@ -418,28 +428,32 @@ Block curBlock;
 Change curChange;
 ---
 
-Finally, I need 3 flags to keep track of if it is currently parsing a codeblock, a search block,
-or a replace block.
+Finally, I need flags to keep track of if a @code or @file block has been opened or if it is
+currently parsing a code or file block, a search block, or a replace block.
 
 --- Initialize some variables +=
-bool inCodeblock = false;
+bool codeBlockOpened = false;
+bool fileBlockOpened = false;
+bool inCodeOrFileBlock = false;
 bool inSearchBlock = false;
 bool inReplaceBlock = false;
 ---
 
 @s Parsing the Line
 
-When parsing a line, we are either inside a code block, or inside a prose block, or we are transitioning
-from one to the other. So we'll have an if statement to separate the two.
+When parsing a line, we are either inside a code block, inside a file block, inside a prose
+block, or we are transitioning from one to the other. So we'll have an if statement to
+separate the two.
 
 --- Parse the line
-if (!inCodeblock) {
+if (!codeBlockOpened && !fileBlockOpened && !inCodeOrFileBlock) {
     // This might be a change block
     @{Parse change block}
     @{Parse a command}
     @{Parse a title command}
+    @{Parse a code command}
+    @{Parse a file command}
     @{Parse a section definition}
-    @{Parse the beginning of a code block}
     else if (curBlock !is null) {
         if (line.split().length > 1) {
             if (commands.canFind(line.split()[0])) {
@@ -448,14 +462,16 @@ if (!inCodeblock) {
         }
         @{Add the line to the list of lines}
     }
-} else if (startsWith(line, "---")) {
+} else if (codeBlockOpened || fileBlockOpened) {
+     @{Parse the beginning of a code or file block}
+} else if (startsWith(line, "```")) {
     @{Begin a new prose block}
 } else if (curBlock !is null) {
     @{Add the line to the list of lines}
 }
 ---
 
-Parsing a command and the title command are both fairly simple, so let's look at them first.
+Parsing commands is fairly simple, so let's look at that first.
 
 To parse a command we first make sure that there is the command name, and any arguments.
 Then we check if the command is part of the list of commands we have. If it is, we
@@ -508,6 +524,102 @@ if (startsWith(line, "@title")) {
 }
 ---
 
+@s Parsing code and file commands
+
+Parsing the `@code` command is a bit more complicated. The line will always begin with
+`@code` and will be followed by the title and optional code modifiers. Any open block
+must then be appended to the current section's list of blocks, and the current codeblock
+must be reset.
+
+--- Parse a code command
+else if (startsWith(line, "@code")) {
+    @{Parse code block name and modifiers}
+    @{Save the current block}
+    @{Create a new block}
+    curBlock.blockType = BlockType.CODE;
+    @{Add block name to list}
+    codeBlockOpened = true;
+}
+---
+
+--- Parse code block name and modifiers
+auto name = strip(line[5..$]);
+Modifier[] modifiers;
+if (endsWith(name, "+=")) {
+    modifiers ~= Modifier.additive;
+    name = name.stripRight("+=");
+} else if (endsWith(name, ":=")) {
+    modifiers ~= Modifier.redef;
+    name = name.stripRight(":=");
+}
+---
+
+Parsing the `@file` command is similar to parsing the `@code` command. The line will
+always begin with `@file` and will be followed by the file name and optional file modifiers.
+The rest of the steps are similar.
+
+--- Parse a file command
+else if (startsWith(line, "@file")) {
+    @{Parse file block name and modifiers}
+    @{Save the current block}
+    @{Create a new block}
+    curBlock.blockType = BlockType.FILE;
+    @{Add block name to list}
+    fileBlockOpened = true;
+}
+---
+
+--- Parse file block name and modifiers
+auto name = strip(line[5..$]);
+Modifier[] modifiers;
+if (endsWith(name, "+x")) {
+    modifiers ~= Modifier.executable;
+    name = name.stripRight("+x");
+}
+---
+
+Saving the current block involves making sure that a section has been defined and then
+adding any existing block to that section's block list.
+
+--- Save the current block
+if (curSection is null) {
+    error(chapter.file, lineNum, "You must define a section with @s before writing a code block");
+    continue;
+}
+if (curBlock !is null) {
+    curSection.blocks ~= curBlock;
+}
+---
+
+Creating a new block is simple. Make sure to strip any leading or trailing whitespace from the
+name.
+
+--- Create a new block
+curBlock = new Block();
+curBlock.startLine = lineObj;
+curBlock.name = name.strip(" ");
+curBlock.modifiers = modifiers;
+foreach (cmd; curSection.commands) {
+    if (cmd.name == "@code_type") {
+        curBlock.codeType = cmd.args;
+    } else if (cmd.name == "@comment_type") {
+        curBlock.commentString = cmd.args;
+    }
+}
+---
+
+Check for block redefinition when adding the new block name to the list.
+
+--- Add block name to list
+if (blocks.canFind(curBlock.name)) {
+    if (!curBlock.modifiers.canFind(Modifier.redef) && !curBlock.modifiers.canFind(Modifier.additive)) {
+        error(filename, lineNum, "Redefinition of {" ~ curBlock.name ~ "}, use ':=' to redefine");
+    }
+} else {
+    blocks ~= curBlock.name;
+}
+---
+
 @s Parsing a Section Definition
 
 When a new section is created (using `@s`), we should add the current section to the list
@@ -516,11 +628,11 @@ current section.
 
 --- Parse a section definition
 else if (startsWith(line, "@s")) {
-    if (curBlock !is null && !curBlock.isCodeblock) {
+    if (curBlock !is null && (curBlock.blockType == BlockType.PROSE)) {
         if (strip(curBlock.text()) != "") {
             curSection.blocks ~= curBlock;
         }
-    } else if (curBlock !is null && curBlock.isCodeblock) {
+    } else if (curBlock !is null && (curBlock.blockType != BlockType.PROSE)) {
         error(curBlock.startLine.file, curBlock.startLine.lineNum, "Unclosed block {" ~ curBlock.name ~ "}");
     }
     // Make sure the section exists
@@ -533,126 +645,30 @@ else if (startsWith(line, "@s")) {
     curSection.num = ++sectionNum;
 
     curBlock = new Block();
-    curBlock.isCodeblock = false;
+    curBlock.blockType = BlockType.PROSE;
 }
 ---
 
-@s Parse the Start of a Codeblock
+@s Parse the beginning of a code or file block
 
-Codeblocks always begin with `--- title`, so we can use the regex `^---.+` to represent this.
-Once a new codeblock starts, the old one must be appended to the current section's list of
-blocks, and the current codeblock must be reset.
+The previous line was a `@code` or `@file` statement so this line must start with "```" and
+may optionally include the language.
 
---- Parse the beginning of a code block
-else if (matchAll(line, regex("^---.+"))) {
-    if (curSection is null) {
-        error(chapter.file, lineNum, "You must define a section with @s before writing a code block");
-        continue;
-    }
-
-    if (curBlock !is null) {
-        curSection.blocks ~= curBlock;
-    }
-    curBlock = new Block();
-    curBlock.startLine = lineObj;
-    curBlock.isCodeblock = true;
-    curBlock.name = strip(line[3..$]);
-
-    @{Parse Modifiers}
-
-    if (blocks.canFind(curBlock.name)) {
-        if (!curBlock.modifiers.canFind(Modifier.redef) && !curBlock.modifiers.canFind(Modifier.additive)) {
-            error(filename, lineNum, "Redefinition of {" ~ curBlock.name ~ "}, use ':=' to redefine");
-        }
-    } else {
-        blocks ~= curBlock.name;
-    }
-
-    foreach (cmd; curSection.commands) {
-        if (cmd.name == "@code_type") {
-            curBlock.codeType = cmd.args;
-        } else if (cmd.name == "@comment_type") {
-            curBlock.commentString = cmd.args;
-        }
-    }
-
-    inCodeblock = true;
-}
----
-
-@s Check for and extract modifiers.
-
-Modifier format for a code block: `--- Block Name --- noWeave +=`.
-The `checkForModifiers` ugliness is due to lack of `(?|...)` and friends.
-
-First half matches for expressions *with* modifiers:
-
-1. `(?P<namea>\S.*)` : Keep taking from the first non-whitespace character ...
-2. `[ \t]-{3}[ \t]` : Until it matches ` --- `
-3. `(?P<modifiers>.+)` : Matches everything after the separator.
-
-Second half matches for no modifiers: Ether `Block name` and with a floating separator `Block Name ---`.
-
-1. `|(?P<nameb>\S.*?)` : Same thing as #1 but stores it in `nameb`
-2. `[ \t]*?` : Checks for any amount of whitespace (Including none.)
-3. `(-{1,}$` : Checks for any floating `-` and verifies that nothing else is there untill end of line.
-4. `|$))` : Or just checks that there is nothing but the end of the line after the whitespace.
-
-Returns ether `namea` and `modifiers` or just `nameb`. 
-
---- Parse Modifiers
-auto checkForModifiers = ctRegex!(`(?P<namea>\S.*)[ \t]-{3}[ \t](?P<modifiers>.+)|(?P<nameb>\S.*?)[ \t]*?(-{1,}$|$)`);
-auto splitOnSpace = ctRegex!(r"(\s+)");
-auto modMatch = matchFirst(curBlock.name, checkForModifiers);
-
-// matchFirst returns unmatched groups as empty strings
-
-if (modMatch["namea"] != "") {
-    curBlock.name = modMatch["namea"];
-} else if (modMatch["nameb"] != ""){
-    curBlock.name = modMatch["nameb"];
-    // Check for old syntax.
-    if (curBlock.name.endsWith("+=")) {
-        curBlock.modifiers ~= Modifier.additive;
-        curBlock.name = strip(curBlock.name[0..$-2]);
-    } else if (curBlock.name.endsWith(":=")) {
-        curBlock.modifiers ~= Modifier.redef;
-        curBlock.name = strip(curBlock.name[0..$-2]);
-    }
+--- Parse the beginning of a code or file block
+if (startsWith(line, "```")) {
+    codeBlockOpened = false;
+    fileBlockOpened = false;
+    inCodeOrFileBlock = true;
 } else {
-    error(filename, lineNum, "Something went wrong with: " ~ curBlock.name);
+    error(chapter.file, lineNum, "The line following a @code or @file statement must be a code block");
+    continue;
 }
 
-if (modMatch["modifiers"]) {
-    foreach (m; splitter(modMatch["modifiers"], splitOnSpace)) {
-        switch(m) {
-            case "+=":
-                curBlock.modifiers ~= Modifier.additive;
-                break;
-            case ":=":
-                curBlock.modifiers ~= Modifier.redef;
-                break;
-            case "noWeave":
-                curBlock.modifiers ~= Modifier.noWeave;
-                break;
-            case "noTangle":
-                curBlock.modifiers ~= Modifier.noTangle;
-                break;
-            case "noHeader":
-                curBlock.modifiers ~= Modifier.noHeader;
-                break;
-            default:
-                error(filename, lineNum, "Invalid modifier: " ~ m);
-                break;
-        }
-    }
-
-}
 ---
 
 @s Parse the End of a Codeblock
 
-Codeblocks end with just a `---`. When a codeblock ends, we do the same as when it begins,
+Codeblocks end with just a "```". When a codeblock ends, we do the same as when it begins,
 except the new block we create is a block of prose as opposed to code.
 
 --- Begin a new prose block
@@ -661,8 +677,8 @@ if (curBlock !is null) {
 }
 curBlock = new Block();
 curBlock.startLine = lineObj;
-curBlock.isCodeblock = false;
-inCodeblock = false;
+curBlock.blockType = BlockType.PROSE;
+inCodeOrFileBlock = false;
 ---
 
 @s Add the current line
@@ -685,7 +701,7 @@ closed with `---`. If it wasn't we'll throw an error.
 
 --- Close the last section
 if (curBlock !is null) {
-    if (!curBlock.isCodeblock) {
+    if (curBlock.blockType == BlockType.PROSE) {
         curSection.blocks ~= curBlock;
     } else {
         error(filename, cast (int)(lines.length - 1), "{%s} is never closed".format(curBlock.name));

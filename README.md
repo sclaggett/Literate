@@ -1,152 +1,153 @@
 # Literate
 
-## What is Literate programming?
+This repository is a fork of [*Literate*](https://github.com/zyedidia/Literate), and excellent tool that was inspired by Donald Knuth's [literate programming](https://en.wikipedia.org/wiki/Literate_programming) paradigm. [Zachary Yedidia](https://github.com/zyedidia) extended and modernized Knuth's ideas when he created *Literate*. I recommend familiarizing yourself with his system in order to understand why I've created this fork.
 
-Literate programming is a style of programming invented by Donald Knuth, where the main idea is that a program's source code is made primarily to be read and understood by other people, and secondarily to be executed by the computer.
+## Building on MacOS
 
-This frees the programmer from the structure of a program imposed by the computer and means that the programmer can develop programs in the order of the flow of their thoughts.
-
-A Literate program generally consists of explanation of the code in a natural language such as English, interspersed with snippets of code to be executed. This means that Literate programs are very easy to understand and share, as all the code is well explained.
-
----
-
-Literate is a tool for creating literate programs.
-
-The goal of this project is to create a literate programming tool which keeps most, if not all of the features of Knuth and Levy's original CWEB system, but simplifies the system and adds even more features.
-
-You can view the main website about Literate [here](http://literate.zbyedidia.webfactional.com) including a [manual](http://literate.zbyedidia.webfactional.com/manual.php) on how to use Literate.
-
-If you like the project, make sure to leave a star :smile:
-
-## Features
-
-* Supports any language including syntax highlighting and pretty printing in HTML
-* Markdown based -- very easy to read and write Literate source.
-* Reports syntax errors back from the compiler to the right line in the literate source
-* Generates readable and commented code in the target language (the generated code is usable by others)
-* Supports TeX equations with `$` notation.
-* Literate source code is readable whether you are looking at the `.lit` file, or the generated HTML.
-* Highly customizable (you can add your own HTML or CSS)
-* Runs fast -- wc.lit compiled for me in 7ms for both code and HTML output
-* Automatically generates hyperlinks between code sections
-* Formatted output similar to CWEB
-* Supported by [micro](https://github.com/zyedidia/micro) (by default)
-* Compatible with Vim ([literate.vim] (https://github.com/zyedidia/literate.vim))
-
-## Example
-
-Here is a trivial example of a literate program saved in the file `hello.lit`.
-
-For a full example of a literate program, please see [`examples/wc.lit`](https://github.com/zyedidia/Literate/blob/master/examples/wc.lit) which
-is a literate implementation of the `wc` (word count) program found on Unix systems.
-You can find the compiled html [here](http://literate.zbyedidia.webfactional.com/examples/wc.html).
+Download [*dmd*](https://dlang.org/download.html#dmd), the D compiler, and install the package. Download [*dub*](https://code.dlang.org/download), the D package manager, and extract the archive and copy the executable to `usr/local/bin`. Both should be now available from the command line:
 
 ```
-@title Hello world in C
+$ dmd -h
+DMD64 D Compiler v2.085.0
+Copyright (C) 1999-2019 by The D Language Foundation, All Rights Reserved written by Walter Bright
+...
 
-@s Introduction
-
-This is an example hello world C program.
-We can define codeblocks with `---`
-
---- hello.c
-@{Includes}
-
-int main() {
-    @{Print a string}
-    return 0;
-}
----
-
-Now we can define the `Includes` codeblock:
-
---- Includes
-#include <stdio.h>
----
-
-Finally, our program needs to print "hello world"
-
---- Print a string
-printf("hello world\n");
----
+$ dub -h
+USAGE: dub [--version] [<command>] [<options...>] [-- [<application arguments...>]]
+...
 ```
 
-To compile this code simply run
-
-`$ lit hello.lit`
-
-Which generates [hello.c](http://literate.zbyedidia.webfactional.com/examples/hello.c) and [hello.html](http://literate.zbyedidia.webfactional.com/examples/hello.html).
-
-You can also find this program in `examples/hello.lit`.
-
-## Installation
-
-### Prebuilt binaries
-
-| Download |
-| --- |
-| [Mac OS X](http://literate.zbyedidia.webfactional.com/binaries/literate-osx.tar.gz) |
-| [64 bit Linux](http://literate.zbyedidia.webfactional.com/binaries/literate-linux64.tar.gz) |
-| [32 bit Linux](http://literate.zbyedidia.webfactional.com/binaries/literate-linux32.tar.gz) |
-| [Arm Linux](http://literate.zbyedidia.webfactional.com/binaries/literate-linux-arm.tar.gz) |
-
-### Building from Source
-
-#### Mac
-
-On Mac you can use brew to build Literate from source:
+Clone the repository and build:
 
 ```
-$ brew tap zyedidia/literate
-$ brew install --HEAD literate
-```
-
-For now, Literate is head only.
-
----
-
-Literate is made with the [D programming language](https://dlang.org) so you must install [dmd](https://dlang.org/download.html#dmd) (D compiler) and [dub](https://code.dlang.org/download) (D package manager). Then you should download the zip or clone the repository and run the following commands:
-
-```
+$ git clone git@github.com:sclaggett/Literate.git
 $ cd Literate
 $ make
 ```
 
-You can find the binary in path/to/Literate/bin (you may want to add this to your path or move it to `/usr/local/bin`).
-
-### Editors
-
-### Micro
-
-The micro editor has support for literate by default. Download it [here](https://github.com/zyedidia/micro).
-
-### Vim
-
-You might also want to go install the [Vim plugin](https://github.com/zyedidia/literate.vim) (it has syntax highlighting of the embedded code, linting with Neomake, and jumping to codeblock definitions). 
-I'm sorry that no other editors are supported -- I don't know how to make plugins for other editors.
-
-## Usage
+Copy the executable to the *bin* directory:
 
 ```
-Lit: Literate Programming System
-
-Usage: lit [options] <inputs>
-
-Options:
---help       -h         Show this help text
---tangle     -t         Only compile code files
---weave      -w         Only compile HTML files
---no-output  -no        Do not generate any output files
---out-dir    -odir DIR  Put the generated files in DIR
---compiler   -c         Report compiler errors (needs @compiler to be defined)
---linenums   -l    STR  Write line numbers prepended with STR to the output file
---md-compiler COMPILER  Use COMPILER as the markdown compiler instead of the built-in one
---version    -v         Show the version number and compiler information
+$ cp bin/lit /usr/local/bin/
 ```
 
-For more information see the [manual](http://literate.zbyedidia.webfactional.com/manual.php).
+## Motivation
 
-## Contributing
+Knuth developed literate programming back in late 70s and early 80s, a time which seems like eons ago in the world of computing. A software application in his original system was written as a single *web* file and consisted of a mixture of English, TEX, and Pascal. This *web* file was then processed by two applications, *tangle* and *weave*. The former, *tangle*, extracted the Pascal portions and combined them into a source file that could be compiled to obtain the executable. The latter, *weave*, processed the entire *web* file into a typeset file that could be rendered in a visually appealing format. The figure below, from Knuth's original paper, depicts this workflow:
 
-Literate is written in Literate D and you can find the source code in the `lit` directory. You can also read the source code compiled by Literate [here](http://literate.zbyedidia.webfactional.com/literate-source).
-I am happy to accept pull requests, and if you find any bugs, please report them. Thanks!
+![Missing: Tangle and weave](images/TangleAndWeave.png "Tangle and weave")
+
+*Literate* introduced a number of features that modernized Knuth's original work, including writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. However, one of the sticking points of Knuth's original system is still an issue for *Literate*: switching to literate programming means introducing additional steps in the development workflow.
+
+This fork of *Literate* was created to deal with the additional step that I consider the largest impedement: the need to *weave* in order to obtain a visually appealing rendering of the program. My goal is to be able to write literate programs in Markdown editors that support extended features like image embedding and preview editing and have everything render nicely as it is being developed. I want to spend most of my time directly with the Markdown files but I also want them to look good and display embedded images.
+
+## Code blocks
+
+The primary reason that files written for *Literate* render poorly when interpreted directly as Markdown is the choice of `---` to delineate code blocks. Consider the following example:
+
+```
+--- Babel presets
+"presets": [
+  "@babel/preset-env",
+  "@babel/preset-react"
+],
+---
+```
+
+This produces ugly output when rendered as Markdown:
+
+--- This is a code block
+"presets": [
+  "@babel/preset-env",
+  "@babel/preset-react"
+],
+---
+
+My solution to this problem is to modify *Literate* to use `` ``` `` as code block delimiters and to introduce the `@code` statement. The example above now becomes:
+
+````
+@code Babel presets
+```
+"presets": [
+  "@babel/preset-env",
+  "@babel/preset-react"
+],
+```
+````
+
+Which renders more naturally as Markdown:
+
+@code Babel presets
+```
+"presets": [
+  "@babel/preset-env",
+  "@babel/preset-react"
+],
+```
+
+The new `@code` statement specifies the block name and needs to occur on the line immediately preceeding the opening delimiter. Any code blocks that don't have this statement will appear as code in the markdown file but will not be included in the tangled output.
+
+One advantage of this approach is the ability to specify the language of a code block:
+
+````
+@code Sample JavaScript code
+```javascript
+const a = 5;
+const aa = pow(a, 2);
+doSomething(aa);
+```
+````
+
+Markdown editors can then properly colorized the code:
+
+@code Sample JavaScript code
+```javascript
+var a = 5;
+var aa = Math.pow(a, 2);
+doMoreStuff(aa);
+```
+
+Similar to the old `---` delimiter, the `@code` statement may end with one of the following code block modifiers:
+- `+=`: Adds code to an already defined block
+- `:=`: Redefines a codeblock
+
+## File blocks
+
+One of the improvements introduced in *Literate* is the ability to save any code blocks with a name that appeared to be a file as a file with the same name. For example, the following would be saved to `output.sh`:
+
+```
+--- output.sh
+#!/bin/sh
+echo "Test"
+---
+```
+
+The primary issue I ran into with this approach was the desire to automatically set the execute bit on literate scripts. A secondary concern was that the decision of whether a code block was a file or not occurred in a somewhat opaque fashion that could lead to unexpected or undesired behavior. My solution is to introduce a new `@file` statement which takes the file name and optionally ends with `+x` to set the execute bit:
+
+````
+@file output.sh +x
+```
+#!/bin/sh
+echo "Test"
+```
+````
+
+## Directory creation
+
+An issue in the original *Literate* program was its inability to create output directories if they didn't exist. Consider the following example:
+
+````
+@file database/mysql.js
+```mysql
+var mysql = require("mysql");
+
+var pool  = mysql.createPool({
+  host: "localhost",
+  user: "mysql",
+  password: "mysql",
+  database: "test"
+});
+```
+````
+
+This example will fail to *tangle* if the `database` directory don't exists. While this is a minor complication, it can become cumbersome in larger projects. This version of *Literate* will automatically create directories if they don't exist. 
