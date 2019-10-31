@@ -56,7 +56,7 @@ The primary reason that files written for *Literate* render poorly when interpre
 
 This produces ugly output when rendered as Markdown:
 
---- This is a code block
+--- Babel presets
 "presets": [
   "@babel/preset-env",
   "@babel/preset-react"
@@ -113,7 +113,7 @@ Similar to the old `---` delimiter, the `@code` statement may end with one of th
 
 ## File blocks
 
-One of the improvements introduced in *Literate* is the ability to save any code blocks with a name that appeared to be a file as a file with the same name. For example, the following would be saved to `output.sh`:
+One of the improvements introduced in *Literate* was the ability to save any code blocks with a name that appeared to be a file as a file with the same name. For example, the following would be saved to `output.sh`:
 
 ```
 --- output.sh
@@ -131,6 +131,11 @@ The primary issue I ran into with this approach was the desire to automatically 
 echo "Test"
 ```
 ````
+
+## Source file hashing
+
+Don't update output files if they haven't changed
+
 
 ## Directory creation
 
