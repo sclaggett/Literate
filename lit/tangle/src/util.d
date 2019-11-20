@@ -7,6 +7,8 @@ import std.string;
 import std.path;
 import std.regex;
 
+import std.algorithm;
+
 // readall function
 // Read from a file
 string readall(File file) {

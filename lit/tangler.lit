@@ -20,12 +20,13 @@ Here is an overview of the file:
 import globals;
 import std.string: lastIndexOf, split, strip;
 import std.stdio;
-import std.algorithm: canFind;
+import std.algorithm: canFind, startsWith, endsWith;
 import parser;
 import util;
 import std.conv: to, octal;
 import std.file: exists, mkdirRecurse, setAttributes;
 import std.digest.sha;
+import std.array: replace;
 
 void tangle(Program p) {
     @{tangle function}

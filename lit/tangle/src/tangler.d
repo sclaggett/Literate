@@ -5,6 +5,8 @@ import parser;
 import main;
 import util;
 
+import std.array: replace;
+
 void tangle(Program p) {
     // tangle function
     Block[string] rootCodeblocks;
