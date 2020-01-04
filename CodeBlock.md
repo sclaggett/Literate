@@ -1,4 +1,6 @@
 # CodeBlock
+@title TEMP
+@s TEMP
 
 CodeBlock class (public Block):
 - Variables:

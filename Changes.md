@@ -1,10 +1,10 @@
 # Changes
 
-The version of *Literate* in this repository is a complete overhaul of Yedidia's original work, one that is connected only by name and inspiration. This document describes what changes that have been made and why.
+The version of *Literate* in this repository is a complete overhaul of Yedidia's original work, one that is connected only by name and inspiration. This document describes what changes have been made and why.
 
 ## Migrate to C++
 
-The largest change to the codebase comes from the migration from the D programming language to C++. It's not that I think C++ is superior to D--the converse is likely true. However, two factors drove the decision for a complete rewrite: I'm familiar with C++ (it's my favorite language) and the answer to any possible programming question in C++ can be easily found online. The lack of others programming in D make finding answers spotty at best.
+The largest change to the codebase comes from the migration from the D programming language to C++. It's not that I think C++ is superior to D--the converse is likely true. However, two factors drove the decision for a complete rewrite: I'm familiar with C++ (it's my favorite language) and the answer to any possible programming question in C++ can be easily found online. The lack of others programming in D make getting help online spotty at best.
 
 ## Work in Markdown
 
@@ -86,7 +86,7 @@ if (count != sizeof(uint64_t))
 }
 ```
 
-Similar to the old `---` delimiter, the `@code` statement may end with the `+=` code block modifier to add to an already defined block.
+Similar to the old `---` delimiter, the `@code` statement may end with the `+=` modifier to extend a previously defined block.
 
 ## File blocks
 
@@ -99,7 +99,7 @@ echo "Test"
 ---
 ```
 
-The primary feature I found missing from this approach was the ability to automatically set the execute bit on literate scripts. A secondary concern was that the decision of whether a code block was a file or not occurred in a somewhat opaque fashion that could lead to unexpected or undesired behavior. The solution is to introduce a new `@file` statement which takes the file name and optionally ends with `+x` to set the execute bit:
+The primary feature I found missing from this approach was the ability to automatically set the execute bit on literate scripts. A secondary concern was that the decision of whether a code block was a file or not occurred in a somewhat opaque fashion that could lead to unexpected or undesired behavior. The solution is to introduce a new `@file` statement which takes the file name and optionally ends with `+x` modifier that instructs the preprocessor to set the execute bit:
 
 ````
 @file scripts/output.sh +x
@@ -121,8 +121,8 @@ This version of *Literate* instead treats every literate source file as a book, 
 
 ## Change detection
 
-Output files will only be saved to disk if they either don't exist or have changed. This seems like a minor change but can save quite a bit of time because most build systems detect changes by the source file's modification timestamp.
+Output files will only be saved to disk if they don't exist or have changed. This seems like a minor change but can save quite a bit of time because most build systems detect changes by the source file's modification timestamp.
 
 ## Return error code
 
-Literate will return a non-zero exit code if errors are encountered during tangling. Again, this is a minor change but is useful because it allows scripts to detect the error and halt.
+*Literate* will return a non-zero exit code if errors are encountered during tangling. Again, this is a minor change but is useful because it allows scripts to detect the error and halt.

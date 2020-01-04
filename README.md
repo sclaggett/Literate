@@ -6,8 +6,8 @@
 
 Literate programming produces a far superior result than any other development approach that I've ever tried (and I've tried a few in my 35 years of programming). The list below outlines its main benefits:
 
-1. **Clarity of thought.** By far the biggest boon is clarity in the design and implementation of the software. The literate approach forces you to think clearly and articulate what you are doing, constantly explaining the design and unfolding program code to an imaginary reader. Flaws in the design are identified and corrected earlier and explaining an ugly hack is more work and much less satisfying than coming up with an elegant solution. The literate paradigm produces a transformation in the state of mind of the programmer like no other that I've encountered.
-2. **Actually useful documentation.** The tight coupling of *what* and *why* in a literate program results in documentation that is actually useful and in sync with the source code. This is far superior to the other two options that are normally observed in the wild: either no documentation at all (the most common) or documentation that is out of date and doesn't describes the current version of the software. It requires tremendous discipline to keep separate documentation and code in sync but literate programming makes this natural and easy.
+1. **Clarity of thought.** By far the biggest boon is clarity in the design and implementation of the software. The literate approach forces you to think through and articulate what you are doing, constantly explaining the design and unfolding program code to an imaginary reader. Flaws in the design are identified and corrected earlier and explaining an ugly hack is more work and much less satisfying than coming up with an elegant solution. The literate paradigm produces a transformation in the state of mind of the programmer like no other that I've encountered.
+2. **Actually useful documentation.** The tight coupling of *what* and *why* in a literate program results in documentation that is actually useful and in sync with the source code. This is far superior to the other two options that are normally observed in the wild: either no documentation at all (the most common) or documentation that is out of date and doesn't describes the current version of the software. It requires tremendous discipline to keep separate documentation and code in sync but literate programming makes this easy.
 3. **Structural freedom.** Literate programs can be written in whatever order is best for conveying an understanding of what they do and why the developers choose to do it that way, freeing programmers from the structure imposed by the compiler.
 4. **Knowledge transfer.** New developers can bring themselves up to speed on a literate code base without being a distraction to the existing team. This is far more efficient than other paradigms where the only option is a combination of having the existing team walk new members through the code and have the new members laboriously reverse-engineered the code.
 
@@ -33,9 +33,9 @@ The list below gives a brief description of each class with links to the impleme
 
 - [Main](Main.md): The main application class that parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
 - [Block](Block.md): Abstract base class that encapsulates variables and functions shared by the *FileBlock* and *CodeBlock* classes.
-- [FileBlock](FileBlock.md): Extends the *Block* class and encapsulates a single literate file block.
+- [FileBlock](FileBlock.md): Extends the *Block* class to encapsulates a single literate file block.
 - [CodeBlock](CodeBlock.md): Encapsulates a single literate block of code.
-- [Parser](Parser.md): Contains the logic for parsing literate files and walking the web.
+- [Parser](Parser.md): Contains logic for parsing the web of literate source files.
 - [Tangler](Tangler.md): Tangles the file and code blocks into the output files.
 
 ## Limitations
@@ -44,4 +44,7 @@ Immature development tools.
 Learning curve.
 No "right" way.
 Most programmers aren't writers.
-Port original error line number handling?
+
+TODO:
+- Port original error line number handling?
+- Warn of orphan code blocks
