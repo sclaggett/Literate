@@ -20,11 +20,13 @@ Here is an overview of the file:
 import globals;
 import std.string: lastIndexOf, split, strip;
 import std.stdio;
-import std.algorithm: canFind;
+import std.algorithm: canFind, startsWith, endsWith;
 import parser;
 import util;
 import std.conv: to, octal;
 import std.file: exists, mkdirRecurse, setAttributes;
+import std.digest.sha;
+import std.array: replace;
 
 void tangle(Program p) {
     @{tangle function}
@@ -38,8 +40,9 @@ void tangle(Program p) {
 The `tangle` function will take a program in, go through all the chapters, sections
 and find all the codeblocks. It will then apply the codeblock with `+=` and `:=`.
 Another thing it must do is find the root blocks, that is, the files that need
-to be generated. Starting with those, it will recursively write code to a file using
-the `writeCode` function.
+to be generated. Starting with those, it will recursively write code to a string using
+the `writeCode` function. It will then calculate the hash of the string and compare it
+to any existing output file before writing.
 
 @s The Tangle Function
 
@@ -63,7 +66,9 @@ if (rootCodeblocks.length == 0) {
 }
 ---
 
-Finally we go through every root codeblock, and run writeCode on it. We open a file
+Finally we go through every root codeblock, and run writeCode on it.
+
+We open a file
 (making sure it is in `outDir`). We get the `commentString` from the list of commands.
 Then we call `writeCode`, which will recursively follow the links and generate all
 the code.
@@ -71,17 +76,16 @@ the code.
 --- tangle function +=
 foreach (b; rootCodeblocks) {
     @{Prepare file paths}
-    File f;
+    string output = "";
+    writeCode(codeblocks, b.name, output, "");  // Modify so the contents are saved to string
     if (!noOutput) {
         if ((parentDir.length > 0) && !exists(parentDir)) {
             mkdirRecurse(parentDir);
         }
-        f = File(fullPath, "w");
-    }
-
-    writeCode(codeblocks, b.name, f, filename, "");
-    if (!noOutput) {
-        f.close();
+        File file = File(fullPath, "w");
+        // Hash here and write the file only if something has changed
+        file.write(output);
+        file.close();
         if (b.modifiers.canFind(Modifier.executable)) {
             setAttributes(fullPath, octal!755);
         }
@@ -112,12 +116,12 @@ all the code for a codeblock. It also keeps the leading whitespace to make sure
 indentation in the target file is correct.
 
 --- writeCode function
-void writeCode(Block[string] codeblocks, string blockName, File file, string filename, string whitespace) {
+void writeCode(Block[string] codeblocks, string blockName, string output, string whitespace) {
     Block block = codeblocks[blockName];
 
     if (block.commentString != "") {
         if (!noOutput && !block.modifiers.canFind(Modifier.noHeader))
-            file.writeln(whitespace ~ block.commentString.replace("%s", blockName));
+            output += whitespace ~ block.commentString.replace("%s", blockName) ~ "\n";
     }
 
     foreach (lineObj; block.lines) {
@@ -133,7 +137,7 @@ void writeCode(Block[string] codeblocks, string blockName, File file, string fil
                 return;
             }
             if ((newBlockName in codeblocks) !is null) {
-                writeCode(codeblocks, newBlockName, file, filename, whitespace ~ newWS);
+                writeCode(codeblocks, newBlockName, output, whitespace ~ newWS);
             } else {
                 error(lineObj.file, lineObj.lineNum, "{" ~ newBlockName ~ "} does not exist");
                 tangleErrors = true;
@@ -142,16 +146,16 @@ void writeCode(Block[string] codeblocks, string blockName, File file, string fil
             if (!noOutput) {
                 if (lineDirectives) {
                     if (lineDirectiveStr != "") {
-                        file.writeln(lineDirectiveStr, " ", lineObj.lineNum);
+                        output += lineDirectiveStr + " " + lineObj.lineNum + "\n";
                     } else {
-                        file.writeln(block.commentString.replace("%s", to!string(lineObj.lineNum)));
+                        output += block.commentString.replace("%s", to!string(lineObj.lineNum)) ~ "\n";
                     }
                 }
-                file.writeln(whitespace ~ line);
+                output += whitespace ~ line ~ "\n";
             }
         }
     }
     if (!noOutput)
-        file.writeln();
+        output += "\n";
 }
 ---
