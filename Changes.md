@@ -86,14 +86,11 @@ if (count != sizeof(uint64_t))
 }
 ```
 
-Similar to the old `---` delimiter, the `@code` statement may end with one of the following code block modifiers:
-
-- `+=`: Adds code to an already defined block
-- `:=`: Redefines a codeblock
+Similar to the old `---` delimiter, the `@code` statement may end with the `+=` code block modifier to add to an already defined block.
 
 ## File blocks
 
-One of the improvements introduced in Yedidia's *Literate* was the ability to save any code blocks as a file. For example, the following would be saved to `output.sh`:
+One of the improvements introduced in Yedidia's *Literate* was the ability to save any code block as a file. For example, the following would be saved to `output.sh`:
 
 ```
 --- scripts/output.sh

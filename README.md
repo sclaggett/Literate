@@ -19,11 +19,24 @@ Donald Knuth developed literate programming back in late 70s and early 80s. A so
 
 ![Missing: Tangle and weave](images/TangleAndWeave.png "Tangle and weave")
 
-This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files.
-
-This repository contains a complete overhaul of Yedidia's original work to fit my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
+This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. My version is a complete overhaul of Yedidia's original work to fits my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
 
 ## Building
+
+## Application
+
+So what might a literate program actually look like in practice? Well, you're looking at one. This codebase, like Knuth's and Yedidia's, is written in the literate style. The current file contains the high-level documentation with links that allow the reader to drill down into the actual implementation files. The figure below shows the classes the application is composed of and their relationship to one another:
+
+![Missing: Overview](images/Overview.png "Overview")
+
+The list below gives a brief description of each class with links to the implementation files:
+
+- [Main](Main.md): The main application class that parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
+- [Block](Block.md): Abstract base class that encapsulates variables and functions shared by the *FileBlock* and *CodeBlock* classes.
+- [FileBlock](FileBlock.md): Extends the *Block* class and encapsulates a single literate file block.
+- [CodeBlock](CodeBlock.md): Encapsulates a single literate block of code.
+- [Parser](Parser.md): Contains the logic for parsing literate files and walking the web.
+- [Tangler](Tangler.md): Tangles the file and code blocks into the output files.
 
 ## Limitations
 
@@ -31,5 +44,4 @@ Immature development tools.
 Learning curve.
 No "right" way.
 Most programmers aren't writers.
-
-## Application
+Port original error line number handling?
