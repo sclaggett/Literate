@@ -1,158 +1,35 @@
 # Literate
 
-This repository is a fork of [*Literate*](https://github.com/zyedidia/Literate), and excellent tool that was inspired by Donald Knuth's [literate programming](https://en.wikipedia.org/wiki/Literate_programming) paradigm. [Zachary Yedidia](https://github.com/zyedidia) extended and modernized Knuth's ideas when he created *Literate*. I recommend familiarizing yourself with his system in order to understand why I've created this fork.
+[Literate programming](https://en.wikipedia.org/wiki/Literate_programming) is a paradigm where the primary focus is to convey an understanding of the system to human readers rather than merely convince the computer to behave in a particular way. A literate program consists of an explanation of the code in a natural language such as English which is interspersed with the snippets of code to be executed. It captures not just what the software is doing, which one can read from the code itself, but *why* the author choose to do it that way.
 
-## Building on MacOS
+## Advantages
 
-Download [*dmd*](https://dlang.org/download.html#dmd), the D compiler, and install the package. Download [*dub*](https://code.dlang.org/download), the D package manager, and extract the archive and copy the executable to `usr/local/bin`. Both should be now available from the command line:
+Literate programming produces a far superior result than any other development approach that I've ever tried (and I've tried a few in my 35 years of programming). The list below outlines its main benefits:
 
-```
-$ dmd -h
-DMD64 D Compiler v2.085.0
-Copyright (C) 1999-2019 by The D Language Foundation, All Rights Reserved written by Walter Bright
-...
+1. **Clarity of thought.** By far the biggest boon is clarity in the design and implementation of the software. The literate approach forces you to think clearly and articulate what you are doing, constantly explaining the design and unfolding program code to an imaginary reader. Flaws in the design are identified and corrected earlier and explaining an ugly hack is more work and much less satisfying than coming up with an elegant solution. The literate paradigm produces a transformation in the state of mind of the programmer like no other that I've encountered.
+2. **Actually useful documentation.** The tight coupling of *what* and *why* in a literate program results in documentation that is actually useful and in sync with the source code. This is far superior to the other two options that are normally observed in the wild: either no documentation at all (the most common) or documentation that is out of date and doesn't describes the current version of the software. It requires tremendous discipline to keep separate documentation and code in sync but literate programming makes this natural and easy.
+3. **Structural freedom.** Literate programs can be written in whatever order is best for conveying an understanding of what they do and why the developers choose to do it that way, freeing programmers from the structure imposed by the compiler.
+4. **Knowledge transfer.** New developers can bring themselves up to speed on a literate code base without being a distraction to the existing team. This is far more efficient than other paradigms where the only option is a combination of having the existing team walk new members through the code and have the new members laboriously reverse-engineered the code.
 
-$ dub -h
-USAGE: dub [--version] [<command>] [<options...>] [-- [<application arguments...>]]
-...
-```
+There are several misconceptions around literate programming. First, some are under the impression that literate programs need to be really wordy. In truth, the developer is free to write as much or as little as necessary to capture their thought process. Others are of the opinion that it is unnecessary because code should be entirely self-documenting. However, not only does this approach not capture the high-level design of the system, but people tend to forget that comments aren't about what is the code doing, which is obvious from reading it, but why the developer choose to do it that way.
 
-Clone the repository and build:
+## History
 
-```
-$ git clone git@github.com:sclaggett/Literate.git
-$ cd Literate
-$ make
-```
-
-Copy the executable to the *bin* directory:
-
-```
-$ cp bin/lit /usr/local/bin/
-```
-
-## Motivation
-
-Knuth developed literate programming back in late 70s and early 80s, a time which seems like eons ago in the world of computing. A software application in his original system was written as a single *web* file and consisted of a mixture of English, TEX, and Pascal. This *web* file was then processed by two applications, *tangle* and *weave*. The former, *tangle*, extracted the Pascal portions and combined them into a source file that could be compiled to obtain the executable. The latter, *weave*, processed the entire *web* file into a typeset file that could be rendered in a visually appealing format. The figure below, from Knuth's original paper, depicts this workflow:
+Donald Knuth developed literate programming back in late 70s and early 80s. A software application in his original system was written as a single *web* file and consisted of a mixture of English, TEX, and Pascal. This *web* file was then processed by two applications, *tangle* and *weave*. The *tangle* application extracted the Pascal portions and combined them into a source file that could be compiled to obtain the executable, while *weave* processed the entire *web* file into a typeset file that could be rendered in a visually appealing format. The figure below is from Knuth's original paper and depicts this workflow:
 
 ![Missing: Tangle and weave](images/TangleAndWeave.png "Tangle and weave")
 
-*Literate* introduced a number of features that modernized Knuth's original work, including writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. However, one of the sticking points of Knuth's original system is still an issue for *Literate*: switching to literate programming means introducing additional steps in the development workflow.
+This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files.
 
-This fork of *Literate* was created to deal with the additional step that I consider the largest impedement: the need to *weave* in order to obtain a visually appealing rendering of the program. My goal is to be able to write literate programs in Markdown editors that support extended features like image embedding and preview editing and have everything render nicely as it is being developed. I want to spend most of my time directly with the Markdown files but I also want them to look good and display embedded images.
+This repository contains a complete overhaul of Yedidia's original work to fit my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
 
-## Code blocks
+## Building
 
-The primary reason that files written for *Literate* render poorly when interpreted directly as Markdown is the choice of `---` to delineate code blocks. Consider the following example:
+## Limitations
 
-```
---- Babel presets
-"presets": [
-  "@babel/preset-env",
-  "@babel/preset-react"
-],
----
-```
+Immature development tools.
+Learning curve.
+No "right" way.
+Most programmers aren't writers.
 
-This produces ugly output when rendered as Markdown:
-
---- Babel presets
-"presets": [
-  "@babel/preset-env",
-  "@babel/preset-react"
-],
----
-
-My solution to this problem is to modify *Literate* to use `` ``` `` as code block delimiters and to introduce the `@code` statement. The example above now becomes:
-
-````
-@code Babel presets
-```
-"presets": [
-  "@babel/preset-env",
-  "@babel/preset-react"
-],
-```
-````
-
-Which renders more naturally as Markdown:
-
-@code Babel presets
-```
-"presets": [
-  "@babel/preset-env",
-  "@babel/preset-react"
-],
-```
-
-The new `@code` statement specifies the block name and needs to occur on the line immediately preceeding the opening delimiter. Any code blocks that don't have this statement will appear as code in the markdown file but will not be included in the tangled output.
-
-One advantage of this approach is the ability to specify the language of a code block:
-
-````
-@code Sample JavaScript code
-```javascript
-const a = 5;
-const aa = pow(a, 2);
-doSomething(aa);
-```
-````
-
-Markdown editors can then properly colorized the code:
-
-@code Sample JavaScript code
-```javascript
-var a = 5;
-var aa = Math.pow(a, 2);
-doMoreStuff(aa);
-```
-
-Similar to the old `---` delimiter, the `@code` statement may end with one of the following code block modifiers:
-- `+=`: Adds code to an already defined block
-- `:=`: Redefines a codeblock
-
-## File blocks
-
-One of the improvements introduced in *Literate* was the ability to save any code blocks with a name that appeared to be a file as a file with the same name. For example, the following would be saved to `output.sh`:
-
-```
---- output.sh
-#!/bin/sh
-echo "Test"
----
-```
-
-The primary issue I ran into with this approach was the desire to automatically set the execute bit on literate scripts. A secondary concern was that the decision of whether a code block was a file or not occurred in a somewhat opaque fashion that could lead to unexpected or undesired behavior. My solution is to introduce a new `@file` statement which takes the file name and optionally ends with `+x` to set the execute bit:
-
-````
-@file output.sh +x
-```
-#!/bin/sh
-echo "Test"
-```
-````
-
-## Source file hashing
-
-Don't update output files if they haven't changed
-
-
-## Directory creation
-
-An issue in the original *Literate* program was its inability to create output directories if they didn't exist. Consider the following example:
-
-````
-@file database/mysql.js
-```mysql
-var mysql = require("mysql");
-
-var pool  = mysql.createPool({
-  host: "localhost",
-  user: "mysql",
-  password: "mysql",
-  database: "test"
-});
-```
-````
-
-This example will fail to *tangle* if the `database` directory don't exists. While this is a minor complication, it can become cumbersome in larger projects. This version of *Literate* will automatically create directories if they don't exist. 
+## Application
