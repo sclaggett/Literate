@@ -26,5 +26,10 @@ add_definitions(-Wall -std=c++11)
 project (lit)
 
 add_executable(lit
-  source/Main.cpp)
+  source/Block.cpp
+  source/CodeBlock.cpp
+  source/FileBlock.cpp
+  source/Main.cpp
+  source/Parser.cpp
+  source/Tangler.cpp)
 ```

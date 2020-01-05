@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Main
 {
 public:
@@ -7,8 +9,5 @@ public:
   virtual ~Main();
 
   uint32_t run(int argc, char** argv);
-
-private:
-  std::string outputDirectory;
 };
 

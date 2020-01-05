@@ -23,6 +23,8 @@ This repository started as a fork of Zachary Yedidia's [*Literate*](https://gith
 
 ## Building
 
+$ lit -t Index.md
+
 ## Application
 
 So what might a literate program actually look like in practice? Well, you're looking at one. This codebase, like Knuth's and Yedidia's, is written in the literate style. The current file contains the high-level documentation with links that allow the reader to drill down into the actual implementation files. The figure below shows the classes the application is composed of and their relationship to one another:
@@ -31,12 +33,12 @@ So what might a literate program actually look like in practice? Well, you're lo
 
 The list below gives a brief description of each class with links to the implementation files:
 
-- [Main](Main.md): The main application class that parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
-- [Block](Block.md): Abstract base class that encapsulates variables and functions shared by the *FileBlock* and *CodeBlock* classes.
-- [FileBlock](FileBlock.md): Extends the *Block* class to encapsulates a single literate file block.
-- [CodeBlock](CodeBlock.md): Encapsulates a single literate block of code.
-- [Parser](Parser.md): Contains logic for parsing the web of literate source files.
-- [Tangler](Tangler.md): Tangles the file and code blocks into the output files.
+- [Main](literate/Main.md): The main application class that parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
+- [Block](literate/Block.md): Abstract base class that encapsulates variables and functions shared by the *FileBlock* and *CodeBlock* classes.
+- [FileBlock](literate/FileBlock.md): Extends the *Block* class to encapsulates a single literate file block.
+- [CodeBlock](literate/CodeBlock.md): Encapsulates a single literate block of code.
+- [Parser](literate/Parser.md): Contains logic for parsing the web of literate source files.
+- [Tangler](literate/Tangler.md): Tangles the file and code blocks into the output files.
 
 ## Limitations
 
