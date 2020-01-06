@@ -6,7 +6,7 @@ The *Main* class parses the command line and uses the *Parser* and *Tangler* cla
 
 This file also includes the *main()* application entry point.
 
-The section below is the header file for the *Main* class. I've choosen to write header files as a single block in this project because they are quite simple. You can easily break more complicated header files up into multiple code blocks and intersperse explanations.
+The section below is the header file for the *Main* class. I've chosen to write header files as a single block in this project because they are quite simple. You can easily break more complicated header files up into multiple code blocks and intersperse explanations.
 
 @file source/Main.h
 ```cpp
@@ -28,7 +28,7 @@ A feature of literate programs that is hinted at in the header above is a reduct
 
 A related aspect which will be observed below is an almost complete lack of comments in the code. Comments are generally unnecessary because the code is explained in English.
 
-(Of course, the lack of extraneous functions and comments is what I've found works best. It isn't a requirement of literate programming itself.)
+Of course, the lack of extraneous functions and comments is what I've found works best. It isn't a requirement of literate programming itself.
 
 The section below gives an overview of the implementation file. Again, my decision to start each literate file in this project with the header file and an overview of the implementation file is a matter of style--you can just as easily start by explaining various aspects of the class and pull everything together at the end.
 
@@ -102,11 +102,11 @@ uint32_t Main::run(int argc, char** argv)
 }
 ```
 
-**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something so fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use [Optparse](thirdparty/Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
+**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something as fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use [Optparse](thirdparty/Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
 
-The link above to *Optparse* has a dual purpose: it provides the human reader a path to the code and it lets the *Literate* preprocessor know that the file exists so it can be processed. *All literate source files must be accessible via links* from the "root" source file in order to be included in the tangled output.
+The link above to *Optparse* has a dual purpose: it provides the human reader a path to the code and it lets the *Literate* preprocessor know that the file exists. *All literate source files must be accessible via links* from the root source file in order to be included in the tangled output.
 
-Parsing occurs in the following three steps.
+Parsing occurs in the following three steps:
 
 @code [main] Parse command line arguments
 ```cpp
@@ -121,7 +121,7 @@ Start by defining the command line arguments that we recognize:
 - `--version/-v`: Show the version number.
 - `--out/-o DIR`: Put the generated files in `DIR`.
 
-One aspect of the following code block that wasn't immediately clear to me is the meaning of the *OPTPARSE_NONE*/*OPTPARSE_REQUIRED* flags. Experimentation showed that the latter indicates that the output directory parameter must be followed by an additional parameter which is what we want for the output directory.
+One aspect of the following code block that wasn't immediately clear to me is the meaning of the *OPTPARSE_NONE*/*OPTPARSE_REQUIRED* flags. Experimentation has shown that the latter indicates that the output directory parameter must be followed by an additional parameter.
 
 @code [main] Define command line arguments
 ```cpp
@@ -135,8 +135,6 @@ struct optparse_long longopts[] =
 ```
 
 Iterate over each command line argument and process it. Experimentation has shown that errors such as missing a required parameter will manifest as the `?` character.
-
-Note that what might be a function named *printHelp()* under a different paradigm can be written a code block that is used several times. Make sure you understand that this approach will result in code duplication in the tangled output. This is similar to an inline function in C++ and a similar thought process should be used to decide if a chunk of logic should be a code block or a separate function.
 
 @code [main] Process arguments
 ```cpp
@@ -168,6 +166,8 @@ while ((option = optparse_long(&options, longopts, NULL)) != -1)
 }
 ```
 
+Note that what might be a function named *printHelp()* under a different paradigm can be written a code block that is used several times. Make sure you understand that this approach will result in code duplication in the tangled output. This is similar to an inline function in C++ and a similar thought process should be used to decide if a chunk of logic should be a code block or a function.
+
 The input literate file will come through the parser as a non-flag argument. Make sure an input file exists and ignore anything after the first value.
 
 @code [main] Extract input file
@@ -182,7 +182,7 @@ if (arg == nullptr)
 string literateFile = arg;
 ```
 
-Define a code block that prints the help message.
+Define the code block that prints the help message.
 
 @code [main] Print help
 ```cpp
@@ -231,7 +231,7 @@ Include the *Optparse*, *Parser*, and *Tanger* header files.
 
 ## Entry point
 
-Define the *main()* application entry point which creates an instance of the *Main* class and runs it.
+Define the *main()* application entry point which creates an instance of the *Main* class and calls the *run()* function.
 
 @code [main] Application entry point
 ```cpp

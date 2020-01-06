@@ -13,11 +13,11 @@ public:
 
 public:
   bool parse(std::string literateFile);
-  std::map<std::string, FileBlock> getFileBlocks();
-  std::map<std::string, CodeBlock> getCodeBlocks();
+  std::map<std::string, FileBlock*> getFileBlocks();
+  std::map<std::string, CodeBlock*> getCodeBlocks();
 
 private:
-  std::map<std::string, FileBlock> fileBlocks;
-  std::map<std::string, CodeBlock> codeBlocks;
+  std::map<std::string, FileBlock*> fileBlocks;
+  std::map<std::string, CodeBlock*> codeBlocks;
 };
 

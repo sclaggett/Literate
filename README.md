@@ -7,11 +7,11 @@
 Literate programming produces a far superior result than any other development approach that I've ever tried (and I've tried a few in my 35 years of programming). The list below outlines its main benefits:
 
 1. **Clarity of thought.** By far the biggest boon is clarity in the design and implementation of the software. The literate approach forces you to think through and articulate what you are doing, constantly explaining the design and unfolding program code to an imaginary reader. Flaws in the design are identified and corrected earlier and explaining an ugly hack is more work and much less satisfying than coming up with an elegant solution. The literate paradigm produces a transformation in the state of mind of the programmer like no other that I've encountered.
-2. **Actually useful documentation.** The tight coupling of *what* and *why* in a literate program results in documentation that is actually useful and in sync with the source code. This is far superior to the other two options that are normally observed in the wild: either no documentation at all (the most common) or documentation that is out of date and doesn't describes the current version of the software. It requires tremendous discipline to keep separate documentation and code in sync but literate programming makes this easy.
+2. **Actually useful documentation.** The tight coupling of *what* and *why* in a literate program results in documentation that is actually useful and in sync with the source code. This is far superior to the other two options that are normally observed in the wild: either no documentation at all (the most common) or documentation that is out of date and doesn't describes the current version of the software. It requires tremendous discipline to keep separate documentation and code in sync but literate programming makes it easy.
 3. **Structural freedom.** Literate programs can be written in whatever order is best for conveying an understanding of what they do and why the developers choose to do it that way, freeing programmers from the structure imposed by the compiler.
-4. **Knowledge transfer.** New developers can bring themselves up to speed on a literate code base without being a distraction to the existing team. This is far more efficient than other paradigms where the only option is a combination of having the existing team walk new members through the code and have the new members laboriously reverse-engineered the code.
+4. **Knowledge transfer.** New developers can bring themselves up to speed on a literate code base without being a distraction to the existing team. This is far more efficient than other paradigms where the only options are to have the existing team walk new members through the code and/or have the new members laboriously reverse-engineered the code.
 
-There are several misconceptions around literate programming. First, some are under the impression that literate programs need to be really wordy. In truth, the developer is free to write as much or as little as necessary to capture their thought process. Others are of the opinion that it is unnecessary because code should be entirely self-documenting. However, not only does this approach not capture the high-level design of the system, but people tend to forget that comments aren't about what is the code doing, which is obvious from reading it, but why the developer choose to do it that way.
+There are several misconceptions around literate programming. First, some are under the impression that literate programs need to be really wordy. In truth, the developer is free to write as much or as little as necessary to capture their thought process. Others are of the opinion that it is unnecessary because code should be entirely self-documenting. However, not only does that approach not capture the high-level design of the system, but people tend to forget that comments aren't about what is the code doing, which is obvious from reading it, but why the developer choose to do it that way.
 
 ## History
 
@@ -19,7 +19,7 @@ Donald Knuth developed literate programming back in late 70s and early 80s. A so
 
 ![Missing: Tangle and weave](images/TangleAndWeave.png "Tangle and weave")
 
-This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. My version is a complete overhaul of Yedidia's original work to fits my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
+This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. My version is a complete overhaul of Yedidia's original work to fit my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
 
 ## Building
 
@@ -33,10 +33,10 @@ So what might a literate program actually look like in practice? Well, you're lo
 
 The list below gives a brief description of each class with links to the implementation files:
 
-- [Main](literate/Main.md): The main application class that parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
-- [Block](literate/Block.md): Abstract base class that encapsulates variables and functions shared by the *FileBlock* and *CodeBlock* classes.
-- [FileBlock](literate/FileBlock.md): Extends the *Block* class to encapsulates a single literate file block.
-- [CodeBlock](literate/CodeBlock.md): Encapsulates a single literate block of code.
+- [Main](literate/Main.md): The main application class that parses the command line arguments and uses the *Parser* and *Tangler* classes to process the web of literate files.
+- [Block](literate/Block.md): Abstract base class that encapsulates variables and functions common to the *FileBlock* and *CodeBlock* classes.
+- [FileBlock](literate/FileBlock.md): Encapsulates a single literate file block.
+- [CodeBlock](literate/CodeBlock.md): Encapsulates a single literate code block.
 - [Parser](literate/Parser.md): Contains logic for parsing the web of literate source files.
 - [Tangler](literate/Tangler.md): Tangles the file and code blocks into the output files.
 
@@ -50,3 +50,5 @@ Most programmers aren't writers.
 TODO:
 - Port original error line number handling?
 - Warn of orphan code blocks
+- Trim whitespace when parsing blocks
+

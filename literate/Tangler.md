@@ -18,8 +18,8 @@ public:
   virtual ~Tangler();
 
 public:
-  bool tangle(std::map<std::string, FileBlock> fileBlocks,
-    std::map<std::string, CodeBlock> codeBlocks, std::string outputDirectory);
+  bool tangle(std::map<std::string, FileBlock*> fileBlocks,
+    std::map<std::string, CodeBlock*> codeBlocks, std::string outputDirectory);
 };
 ```
 
@@ -38,8 +38,8 @@ Tangler::~Tangler()
 {
 }
 
-bool Tangler::tangle(map<string, FileBlock> fileBlocks,
-    map<string, CodeBlock> codeBlocks, string outputDirectory)
+bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
+    map<string, CodeBlock*> codeBlocks, string outputDirectory)
 {
   cout << "Tangle " << outputDirectory << endl;
   return true;

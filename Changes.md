@@ -117,7 +117,7 @@ The original *title* and *section* directives (`@title` and `@s`) have been drop
 
 Yedidia's *book* directive (`@book`) was used to indicate that all hyperlinks in a literate file should be processed as additional literate files, allowing a single index file to be tangled into a entire source tree. This was a big step forward in modernizing literate programs but had several drawbacks: it required maintaining a master list of source files and this list could not contain links to images or web pages or tangling would fail.
 
-This version of *Literate* instead treats every literate source file as a book, walking the web of linked Markdown files and processing each only once. It ignores any links that do not have the `.md` extension, skips any that are not local (e.g. http), and warns of any file links that are missing rather than failing.
+This version of *Literate* instead treats every literate source file as a book. It walks the web of linked Markdown files and processing each only once. It ignores any links that do not have the `.md` extension, skips any that are not local (e.g. http), and warns of any file links that are missing rather than failing.
 
 ## Change detection
 

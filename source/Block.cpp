@@ -1,10 +1,37 @@
 #include "Block.h"
 
-Block::Block()
+using namespace std;
+
+
+Block::Block(string file, uint32_t line) : 
+  sourceFile(file),
+  sourceLine(line)
 {
 }
 
 Block::~Block()
 {
 }
+
+
+bool Block::checkEnd(string line)
+{
+  return (line == BLOCK_DELIMITER);
+}
+
+void Block::addLine(string line)
+{
+  lines.push_back(line);
+}
+
+string Block::getName()
+{
+  return name;
+}
+
+vector<string> Block::getLines()
+{
+  return lines;
+}
+
 
