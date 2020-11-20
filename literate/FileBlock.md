@@ -6,7 +6,7 @@ The *FileBlock* class derives from the base *Block* class, encapsulates a single
 
 A file block has the following signature:
 
->  @file <name> [+x]
+>  @file \<name> [+x]
 >  ```
 >  [line 1]
 >  [line 2]

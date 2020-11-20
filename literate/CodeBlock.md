@@ -6,7 +6,7 @@ The *CodeBlock* class derives from the base *Block* class, encapsulates a single
 
 A code block has the following signature:
 
->  @code <name> [+=]
+>  @code \<name> [+=]
 >  ```
 >  [line 1]
 >  [line 2]

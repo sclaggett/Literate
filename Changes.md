@@ -4,7 +4,7 @@ The version of *Literate* in this repository is a complete overhaul of Yedidia's
 
 ## Migrate to C++
 
-The largest change to the codebase comes from the migration from the D programming language to C++. It's not that I think C++ is superior to D--the converse is likely true. However, two factors drove the decision for a complete rewrite: I'm familiar with C++ (it's my favorite language) and the answer to any possible programming question in C++ can be easily found online. The lack of others programming in D make getting help online spotty at best.
+The largest change to the codebase comes from the migration from the D programming language to C++. It's not that I think C++ is superior to D--the converse is likely true. However, two factors drove the decision for a complete rewrite: familiarity (C++ is my favorite language) and a large support community (answers to C++ programming questions can be easily found online). D's biggest drawback is the lack of users make getting help online spotty at best.
 
 ## Work in Markdown
 

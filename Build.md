@@ -6,7 +6,7 @@
 
 **TODO** Use `Build.sh` to build both applications for the Raspberry Pi and copy them to the device.
 
-@file Build.sh +x
+@file source/Build.sh +x
 ```sh
 #!/bin/sh
 mkdir -p build
@@ -17,7 +17,7 @@ make
 
 ## CMake
 
-@file CMakeLists.txt
+@file source/CMakeLists.txt
 ```
 cmake_minimum_required (VERSION 2.6)
 
