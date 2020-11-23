@@ -10,15 +10,6 @@ using namespace std;
 #define LITERATE_VERSION "0.2"
 
 
-Main::Main()
-{
-}
-
-Main::~Main()
-{
-}
-
-
 uint32_t Main::run(int argc, char** argv)
 {
   struct optparse_long longopts[] =
@@ -55,7 +46,7 @@ uint32_t Main::run(int argc, char** argv)
       outputDirectory = options.optarg;
       break;
   
-    case '?':
+    default:
       cout << "Error: Unknown command line parameter." << endl << endl;
       cout << "Usage:" << endl;
       cout << "  lit [options] <literate file>" << endl << endl;
@@ -90,6 +81,19 @@ uint32_t Main::run(int argc, char** argv)
     return -1;
   }
 
+  map<string, FileBlock*> fileBlocks = parser.getFileBlocks();
+  map<string, CodeBlock*> codeBlocks = parser.getCodeBlocks();
+  printf("File blocks:\n");
+  for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
+  {
+    printf("  %s\n", it->first.c_str());
+  }
+  printf("Code blocks:\n");
+  for (auto it = codeBlocks.begin(); it != codeBlocks.end(); ++it)
+  {
+    printf("  %s\n", it->first.c_str());
+  }
+  
   Tangler tangler;
   if (!tangler.tangle(parser.getFileBlocks(), parser.getCodeBlocks(),
     outputDirectory))

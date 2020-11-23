@@ -17,9 +17,6 @@ The section below is the header file for the *Main* class. I've chosen to write 
 class Main
 {
 public:
-  Main();
-  virtual ~Main();
-
   uint32_t run(int argc, char** argv);
 };
 ```
@@ -37,9 +34,6 @@ The section below gives an overview of the implementation file. Again, my decisi
 @{[main] Includes}
 @{[main] Namespaces}
 @{[main] Definitions}
-
-@{[main] Constructor}
-@{[main] Destructor}
 
 @{[main] Run}
 
@@ -67,24 +61,6 @@ Define the version number. The previous version of *Literate* was 0.1 so increme
 @code [main] Definitions
 ```cpp
 #define LITERATE_VERSION "0.2"
-```
-
-## Construction and destruction
-
-The constructor and destructor don't do anything.
-
-@code [main] Constructor
-```cpp
-Main::Main()
-{
-}
-```
-
-@code [main] Destructor
-```cpp
-Main::~Main()
-{
-}
 ```
 
 ## Running
@@ -134,7 +110,7 @@ struct optparse_long longopts[] =
 };
 ```
 
-Iterate over each command line argument and process it. Experimentation has shown that errors such as missing a required parameter will manifest as the `?` character.
+Iterate over each command line argument and process it.
 
 @code [main] Process arguments
 ```cpp
@@ -158,7 +134,7 @@ while ((option = optparse_long(&options, longopts, NULL)) != -1)
     outputDirectory = options.optarg;
     break;
 
-  case '?':
+  default:
     cout << "Error: Unknown command line parameter." << endl << endl;
     @{[main] Print help}
     return -1;
@@ -211,6 +187,19 @@ if (!parser.parse(literateFile))
 
 @code [main] Tangle output
 ```cpp
+map<string, FileBlock*> fileBlocks = parser.getFileBlocks();
+map<string, CodeBlock*> codeBlocks = parser.getCodeBlocks();
+printf("File blocks:\n");
+for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
+{
+  printf("  %s\n", it->first.c_str());
+}
+printf("Code blocks:\n");
+for (auto it = codeBlocks.begin(); it != codeBlocks.end(); ++it)
+{
+  printf("  %s\n", it->first.c_str());
+}
+
 Tangler tangler;
 if (!tangler.tangle(parser.getFileBlocks(), parser.getCodeBlocks(),
   outputDirectory))

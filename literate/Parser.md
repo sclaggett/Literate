@@ -20,10 +20,6 @@ The sections below contain the header file and implementation overview for this 
 class Parser
 {
 public:
-  Parser();
-  virtual ~Parser();
-
-public:
   bool parse(std::string literateFile);
   std::map<std::string, FileBlock*> getFileBlocks();
   std::map<std::string, CodeBlock*> getCodeBlocks();
@@ -38,9 +34,6 @@ private:
 ```cpp
 @{[parser] Includes}
 @{[parser] Namespaces}
-
-@{[parser] Constructor}
-@{[parser] Destructor}
 
 @{[parser] Getters}
 
@@ -57,26 +50,6 @@ Including the class header file and use the *std* namespace.
 @code [parser] Namespaces
 ```cpp
 using namespace std;
-```
-
-## Construction and destruction
-
-The constructor and destructor don't do anything.
-
-@code [parser] Constructor
-```cpp
-Parser::Parser()
-{
-}
-```
-
-**TODO** Delete blocks.
-
-@code [parser] Destructor
-```cpp
-Parser::~Parser()
-{
-}
 ```
 
 ## Getters
@@ -119,7 +92,7 @@ bool Parser::parse(std::string literateFile)
 }
 ```
 
-**Check if source exists.** The first step is to make sure the source file exists. We don't want to fail if a source isn't found so simply issue a warning, move the source to the process list, and continue around the loop.
+**Check if source exists.** The first step is to make sure the source file exists. We don't want to fail if a source isn't found so simply issue a warning, move the source to the processed list, and continue around the loop.
 
 @code [parser] Check if source exists
 ```cpp
@@ -165,14 +138,21 @@ for (uint32_t i = 0; i < lines.size(); ++i)
   else
   {
     @{[parser] Add block line}
-    @{[parser] Handle end of block}
+    if (isBlockFile)
+    {
+      @{[parser] Handle end of file block}
+    }
+    else
+    {
+      @{[parser] Handle end of code block}
+    }
   }
 }
 ```
 
 Consider the first case where we are not currently parsing a block. Here we need to handle two conditions: the start of a new block and any source links.
 
-The code below is where we detect and handle the start of a new block. Check that we have at least one additional line beyond the current one and invoke the static *checkStart()* functions of the derived classes for the actual check.
+The code below is where we detect and handle the start of a new block. Check that we have at least one additional line beyond the current one and invoke the static *checkStart()* functions of the derived classes for the actual checks. Parse the block header if one was found and continue around the loop.
 
 @code [parser] Handle start of block
 ```cpp
@@ -203,11 +183,37 @@ if ((i + 1) < lines.size())
 }
 ```
 
+The second condition that needs to be handled is when we aren't in a file or code block but are in a natural language region where links to other literate files may be encountered. We want to parse out any other source file links and add them to the unprocessed file list.
+
+This step could get really complicated quickly. We opt for a simple solution here and will return to address corner cases only after they start causing us grief. Use a regular expression to find Markdown links that end in `.md` and filter out http, https, and ftp URLs.
+
 @code [parser] Parse source links
 ```cpp
+if (block == nullptr)
+{
+  regex linkRegEx("\\[\\w+\\]\\((.*?\\.md)\\)");
+  smatch results;
+  string::const_iterator matchStart(line.cbegin());
+  while (regex_search(matchStart, line.cend(), results, linkRegEx))
+  {
+    if (results.size() == 2)
+    {
+      string path = results[1];
+      if ((path.rfind("http://", 0) != 0) &&
+        (path.rfind("https://", 0) != 0) &&
+        (path.rfind("ftp://", 0) != 0) &&
+        (fileBlocks.find(path) == fileBlocks.end()) &&
+        (codeBlocks.find(path) == codeBlocks.end()))
+      {
+        unprocessedSources.push_back(path);
+      }
+    }
+    matchStart = results.suffix().first;
+  }
+}
 ```
 
-Next comes the second case in which we are currently parsing a block. Again two conditions need to be handled: lines that belong to the current block and the end of the block.
+Next comes the second case in which we are currently parsing a block. Three situations need to be handled: lines that belong to the current block, and the end of file and code blocks.
 
 The code below adds lines to the current block which turns out to be fairly simple: make sure we aren't at the end of the block, add the line and continue around the loop.
 
@@ -220,30 +226,58 @@ if (!block->checkEnd(line))
 }
 ```
 
-@code [parser] Handle end of block
+Handle the end of a file block by making sure it has a unique name, appending it to the file block array, and clearing the *block* pointer.
+
+@code [parser] Handle end of file block
 ```cpp
-if (isBlockFile)
+if (fileBlocks.find(block->getName()) != fileBlocks.end())
 {
-  if (fileBlocks.find(block->getName()) != fileBlocks.end())
-  {
-    cout << "Error: Duplicate file block \"" << block->getName() <<
-      "\" in file \"" << source << "\".";
-    return false;
-  }
-  fileBlocks.insert(make_pair(block->getName(),
-    dynamic_cast<FileBlock*>(block)));
+  cout << "Error: Duplicate file block \"" << block->getName() <<
+    "\" in file \"" << source << "\".";
+  return false;
 }
-else
-{
-  // Check for append modifier. If not set, make sure block isn't a duplicate and insert it. If set, make sure block has already been defined and append to original.
-  codeBlocks.insert(make_pair(block->getName(),
-    dynamic_cast<CodeBlock*>(block)));
-}
+fileBlocks.insert(make_pair(block->getName(),
+  dynamic_cast<FileBlock*>(block)));
 block = nullptr;
 ```
 
+The handling of code blocks is a bit more involved because of the possibility of appending to an existing block. If the append flag is set then find the matching block and append the text, otherwise make sure the block name is unique and append it to the array.
 
-
+@code [parser] Handle end of code block
+```cpp
+CodeBlock* codeBlock = dynamic_cast<CodeBlock*>(block);
+if (codeBlock->getAppend())
+{
+  map<string, CodeBlock*>::iterator it = codeBlocks.find(codeBlock->getName());
+  if (it == codeBlocks.end())
+  {
+    cout << "Error: Cannot append to non-existent code block \"" <<
+      block->getName() << "\" in file \"" << source << "\".";
+    return false;
+  }
+  CodeBlock* existingBlock = it->second;
+  vector<string> newLines = codeBlock->getLines();
+  for (vector<string>::iterator lineIt = newLines.begin();
+    lineIt != newLines.end(); ++lineIt)
+  {
+    existingBlock->addLine(*lineIt);
+  }
+  delete block;
+  block = nullptr;
+}
+else
+{
+  if (codeBlocks.find(block->getName()) != codeBlocks.end())
+  {
+    cout << "Error: Duplicate code block \"" << block->getName() <<
+      "\" in file \"" << source << "\".";
+    return false;
+  }
+  codeBlocks.insert(make_pair(block->getName(),
+    dynamic_cast<CodeBlock*>(block)));
+  block = nullptr;
+}
+```
 
 **Move source to processed list.** The final step is to move the source from the unprocessed list to the processed one. Any new sources that were discovered via links will have been appended to the back of the unprocessed list so we can simply pop off the front item.
 
@@ -261,4 +295,5 @@ Include the necessary headers.
 #include <iostream>
 #include <iterator>
 #include <list>
+#include <regex>
 ```

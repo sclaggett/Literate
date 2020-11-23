@@ -8,10 +8,6 @@
 class Parser
 {
 public:
-  Parser();
-  virtual ~Parser();
-
-public:
   bool parse(std::string literateFile);
   std::map<std::string, FileBlock*> getFileBlocks();
   std::map<std::string, CodeBlock*> getCodeBlocks();

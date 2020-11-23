@@ -46,6 +46,9 @@ The list below gives a brief description of each class with links to the impleme
 
 **TODO**
 
+- [Build](Build.md)
+- [Optparse](literate/thirdparty/Optparse.md)
+
 Immature development tools.
 Learning curve.
 No "right" way.

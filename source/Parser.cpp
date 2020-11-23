@@ -3,17 +3,9 @@
 #include <iostream>
 #include <iterator>
 #include <list>
+#include <regex>
 
 using namespace std;
-
-
-Parser::Parser()
-{
-}
-
-Parser::~Parser()
-{
-}
 
 
 map<string, FileBlock*> Parser::getFileBlocks()
@@ -85,6 +77,28 @@ bool Parser::parse(std::string literateFile)
           }
         }
 
+        if (block == nullptr)
+        {
+          regex linkRegEx("\\[\\w+\\]\\((.*?\\.md)\\)");
+          smatch results;
+          string::const_iterator matchStart(line.cbegin());
+          while (regex_search(matchStart, line.cend(), results, linkRegEx))
+          {
+            if (results.size() == 2)
+            {
+              string path = results[1];
+              if ((path.rfind("http://", 0) != 0) &&
+                (path.rfind("https://", 0) != 0) &&
+                (path.rfind("ftp://", 0) != 0) &&
+                (fileBlocks.find(path) == fileBlocks.end()) &&
+                (codeBlocks.find(path) == codeBlocks.end()))
+              {
+                unprocessedSources.push_back(path);
+              }
+            }
+            matchStart = results.suffix().first;
+          }
+        }
 
       }
       else
@@ -105,15 +119,45 @@ bool Parser::parse(std::string literateFile)
           }
           fileBlocks.insert(make_pair(block->getName(),
             dynamic_cast<FileBlock*>(block)));
+          block = nullptr;
+
         }
         else
         {
-          // Check for append modifier. If not set, make sure block isn't a duplicate and insert it. If set, make sure block has already been defined and append to original.
-          codeBlocks.insert(make_pair(block->getName(),
-            dynamic_cast<CodeBlock*>(block)));
-        }
-        block = nullptr;
+          CodeBlock* codeBlock = dynamic_cast<CodeBlock*>(block);
+          if (codeBlock->getAppend())
+          {
+            map<string, CodeBlock*>::iterator it = codeBlocks.find(codeBlock->getName());
+            if (it == codeBlocks.end())
+            {
+              cout << "Error: Cannot append to non-existent code block \"" <<
+                block->getName() << "\" in file \"" << source << "\".";
+              return false;
+            }
+            CodeBlock* existingBlock = it->second;
+            vector<string> newLines = codeBlock->getLines();
+            for (vector<string>::iterator lineIt = newLines.begin();
+              lineIt != newLines.end(); ++lineIt)
+            {
+              existingBlock->addLine(*lineIt);
+            }
+            delete block;
+            block = nullptr;
+          }
+          else
+          {
+            if (codeBlocks.find(block->getName()) != codeBlocks.end())
+            {
+              cout << "Error: Duplicate code block \"" << block->getName() <<
+                "\" in file \"" << source << "\".";
+              return false;
+            }
+            codeBlocks.insert(make_pair(block->getName(),
+              dynamic_cast<CodeBlock*>(block)));
+            block = nullptr;
+          }
 
+        }
       }
     }
 
