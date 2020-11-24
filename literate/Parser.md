@@ -20,6 +20,9 @@ The sections below contain the header file and implementation overview for this 
 class Parser
 {
 public:
+  virtual ~Parser();
+
+public:
   bool parse(std::string literateFile);
   std::map<std::string, FileBlock*> getFileBlocks();
   std::map<std::string, CodeBlock*> getCodeBlocks();
@@ -34,6 +37,8 @@ private:
 ```cpp
 @{[parser] Includes}
 @{[parser] Namespaces}
+
+@{[parser] Destructor}
 
 @{[parser] Getters}
 
@@ -50,6 +55,27 @@ Including the class header file and use the *std* namespace.
 @code [parser] Namespaces
 ```cpp
 using namespace std;
+```
+
+## Destructor
+
+This class maintains internal references to all file and code blocks which need to be released when the class is destroyed.
+
+@code [parser] Destructor
+```cpp
+Parser::~Parser()
+{
+  for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
+  {
+    delete it->second;
+  }
+  fileBlocks.clear();
+  for (auto it = codeBlocks.begin(); it != codeBlocks.end(); ++it)
+  {
+    delete it->second;
+  }
+  codeBlocks.clear();
+}
 ```
 
 ## Getters
@@ -174,7 +200,7 @@ if ((i + 1) < lines.size())
     if (!block->parseHeader(line))
     {
       cout << "Error: Failed to parse block header in file \"" << source <<
-        "\" line " << to_string(i) << ".";
+        "\" line " << to_string(i) << "." << endl;
       return false;
     }
     i += 1;
@@ -233,7 +259,7 @@ Handle the end of a file block by making sure it has a unique name, appending it
 if (fileBlocks.find(block->getName()) != fileBlocks.end())
 {
   cout << "Error: Duplicate file block \"" << block->getName() <<
-    "\" in file \"" << source << "\".";
+    "\" in file \"" << source << "\"." << endl;
   return false;
 }
 fileBlocks.insert(make_pair(block->getName(),
@@ -252,7 +278,7 @@ if (codeBlock->getAppend())
   if (it == codeBlocks.end())
   {
     cout << "Error: Cannot append to non-existent code block \"" <<
-      block->getName() << "\" in file \"" << source << "\".";
+      block->getName() << "\" in file \"" << source << "\"." << endl;
     return false;
   }
   CodeBlock* existingBlock = it->second;
@@ -270,7 +296,7 @@ else
   if (codeBlocks.find(block->getName()) != codeBlocks.end())
   {
     cout << "Error: Duplicate code block \"" << block->getName() <<
-      "\" in file \"" << source << "\".";
+      "\" in file \"" << source << "\"." << endl;
     return false;
   }
   codeBlocks.insert(make_pair(block->getName(),

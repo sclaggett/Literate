@@ -187,19 +187,6 @@ if (!parser.parse(literateFile))
 
 @code [main] Tangle output
 ```cpp
-map<string, FileBlock*> fileBlocks = parser.getFileBlocks();
-map<string, CodeBlock*> codeBlocks = parser.getCodeBlocks();
-printf("File blocks:\n");
-for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
-{
-  printf("  %s\n", it->first.c_str());
-}
-printf("Code blocks:\n");
-for (auto it = codeBlocks.begin(); it != codeBlocks.end(); ++it)
-{
-  printf("  %s\n", it->first.c_str());
-}
-
 Tangler tangler;
 if (!tangler.tangle(parser.getFileBlocks(), parser.getCodeBlocks(),
   outputDirectory))

@@ -8,6 +8,21 @@
 using namespace std;
 
 
+Parser::~Parser()
+{
+  for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
+  {
+    delete it->second;
+  }
+  fileBlocks.clear();
+  for (auto it = codeBlocks.begin(); it != codeBlocks.end(); ++it)
+  {
+    delete it->second;
+  }
+  codeBlocks.clear();
+}
+
+
 map<string, FileBlock*> Parser::getFileBlocks()
 {
   return fileBlocks;
@@ -69,7 +84,7 @@ bool Parser::parse(std::string literateFile)
             if (!block->parseHeader(line))
             {
               cout << "Error: Failed to parse block header in file \"" << source <<
-                "\" line " << to_string(i) << ".";
+                "\" line " << to_string(i) << "." << endl;
               return false;
             }
             i += 1;
@@ -114,7 +129,7 @@ bool Parser::parse(std::string literateFile)
           if (fileBlocks.find(block->getName()) != fileBlocks.end())
           {
             cout << "Error: Duplicate file block \"" << block->getName() <<
-              "\" in file \"" << source << "\".";
+              "\" in file \"" << source << "\"." << endl;
             return false;
           }
           fileBlocks.insert(make_pair(block->getName(),
@@ -131,7 +146,7 @@ bool Parser::parse(std::string literateFile)
             if (it == codeBlocks.end())
             {
               cout << "Error: Cannot append to non-existent code block \"" <<
-                block->getName() << "\" in file \"" << source << "\".";
+                block->getName() << "\" in file \"" << source << "\"." << endl;
               return false;
             }
             CodeBlock* existingBlock = it->second;
@@ -149,7 +164,7 @@ bool Parser::parse(std::string literateFile)
             if (codeBlocks.find(block->getName()) != codeBlocks.end())
             {
               cout << "Error: Duplicate code block \"" << block->getName() <<
-                "\" in file \"" << source << "\".";
+                "\" in file \"" << source << "\"." << endl;
               return false;
             }
             codeBlocks.insert(make_pair(block->getName(),
