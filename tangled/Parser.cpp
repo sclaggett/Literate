@@ -45,7 +45,6 @@ bool Parser::parse(std::string literateFile)
       processedSources.push_back(source);
       continue;
     }
-    cout << "## Parsing file: " << source << endl;
     vector<string> lines;
     string line;
     while (getline(sourceStream, line))
@@ -71,7 +70,7 @@ bool Parser::parse(std::string literateFile)
           string nextLine = lines[lineNumber + 1];
           if (FileBlock::checkStart(line, nextLine))
           {
-            block = new FileBlock(rootDirectory, source, lineNumber);
+            block = new FileBlock(source, lineNumber);
             isBlockFile = true;
           }
           else if (CodeBlock::checkStart(line, nextLine))

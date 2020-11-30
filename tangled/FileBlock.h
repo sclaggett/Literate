@@ -5,8 +5,7 @@
 class FileBlock : public Block
 {
 public:
-  FileBlock(std::string rootDirectory, std::string sourceFile,
-    uint32_t sourceLine);
+  FileBlock(std::string sourceFile, uint32_t sourceLine);
   virtual ~FileBlock();
 
 public:
@@ -15,6 +14,5 @@ public:
   bool getExecutable();
 
 private:
-  std::string rootDirectory;
   bool executable;
 };

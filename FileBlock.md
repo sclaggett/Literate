@@ -27,8 +27,7 @@ The sections below contain the header file and implementation overview for this 
 class FileBlock : public Block
 {
 public:
-  FileBlock(std::string rootDirectory, std::string sourceFile,
-    uint32_t sourceLine);
+  FileBlock(std::string sourceFile, uint32_t sourceLine);
   virtual ~FileBlock();
 
 public:
@@ -37,7 +36,6 @@ public:
   bool getExecutable();
 
 private:
-  std::string rootDirectory;
   bool executable;
 };
 ```
@@ -82,9 +80,8 @@ The constructor simply passes the source file and line to the base class while t
 
 @code [fileblock] Constructor
 ```cpp
-FileBlock::FileBlock(string rootDir, string file, uint32_t line) :
+FileBlock::FileBlock(string file, uint32_t line) :
   Block(file, line),
-  rootDirectory(rootDir),
   executable(false)
 {
 }
@@ -116,13 +113,11 @@ Define the *parseHeader()* function which extracts the name and optional executa
 
 Strip off the file block prefix from the header to get the name. The name may also contain the execute modifier so test for that as well. Strip if off if found and set the flag.
 
-We prepend the root directory to the name so it accurately reflects the location of nested files in the literate web.
-
 @code [fileblock] Parse header
 ```cpp
 bool FileBlock::parseHeader(string line)
 {
-  name = rootDirectory + line.substr(strlen(FILE_BLOCK_PREFIX));
+  name = line.substr(strlen(FILE_BLOCK_PREFIX));
   if (name.find(EXECUTE_POSTFIX, name.size() - strlen(EXECUTE_POSTFIX)) !=
     string::npos)
   {

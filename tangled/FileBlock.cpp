@@ -3,9 +3,8 @@ using namespace std;
 #define FILE_BLOCK_PREFIX "@file "
 #define EXECUTE_POSTFIX " +x"
 
-FileBlock::FileBlock(string rootDir, string file, uint32_t line) :
+FileBlock::FileBlock(string file, uint32_t line) :
   Block(file, line),
-  rootDirectory(rootDir),
   executable(false)
 {
 }
@@ -20,7 +19,7 @@ bool FileBlock::checkStart(string line1, string line2)
 }
 bool FileBlock::parseHeader(string line)
 {
-  name = rootDirectory + line.substr(strlen(FILE_BLOCK_PREFIX));
+  name = line.substr(strlen(FILE_BLOCK_PREFIX));
   if (name.find(EXECUTE_POSTFIX, name.size() - strlen(EXECUTE_POSTFIX)) !=
     string::npos)
   {

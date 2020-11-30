@@ -129,7 +129,6 @@ if (!sourceStream.good())
   @{[parser] Move source to processed list}
   continue;
 }
-cout << "## Parsing file: " << source << endl;
 ```
 
 **Read source.** Read the entire source file into memory as a array of lines and close the stream.
@@ -199,7 +198,7 @@ if ((lineNumber + 1) < lines.size())
   string nextLine = lines[lineNumber + 1];
   if (FileBlock::checkStart(line, nextLine))
   {
-    block = new FileBlock(rootDirectory, source, lineNumber);
+    block = new FileBlock(source, lineNumber);
     isBlockFile = true;
   }
   else if (CodeBlock::checkStart(line, nextLine))
