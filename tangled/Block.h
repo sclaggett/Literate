@@ -16,6 +16,8 @@ public:
   bool checkEnd(std::string line);
   void addLine(std::string line);
 
+  std::string getSourceFile();
+  uint32_t getSourceLine();
   std::string getName();
   std::vector<std::string> getLines();
 
@@ -25,4 +27,3 @@ protected:
   std::string name;
   std::vector<std::string> lines;
 };
-

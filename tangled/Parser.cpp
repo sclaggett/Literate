@@ -4,9 +4,7 @@
 #include <iterator>
 #include <list>
 #include <regex>
-
 using namespace std;
-
 
 Parser::~Parser()
 {
@@ -22,7 +20,6 @@ Parser::~Parser()
   codeBlocks.clear();
 }
 
-
 map<string, FileBlock*> Parser::getFileBlocks()
 {
   return fileBlocks;
@@ -33,10 +30,9 @@ map<string, CodeBlock*> Parser::getCodeBlocks()
   return codeBlocks;
 }
 
-
 bool Parser::parse(std::string literateFile)
 {
-  list<string> unprocessedSources, processedSources;
+  deque<string> unprocessedSources, processedSources;
   unprocessedSources.push_back(literateFile);
   while (!unprocessedSources.empty())
   {
@@ -47,10 +43,8 @@ bool Parser::parse(std::string literateFile)
       cout << "Warning: File \"" << source << "\" not found, skipping." << endl;
       unprocessedSources.pop_front();
       processedSources.push_back(source);
-
       continue;
     }
-
     vector<string> lines;
     string line;
     while (getline(sourceStream, line))
@@ -58,40 +52,44 @@ bool Parser::parse(std::string literateFile)
       lines.push_back(line);
     }
     sourceStream.close();
-
+    string rootDirectory;
+    size_t index = source.rfind("/");
+    if (index != string::npos)
+    {
+      rootDirectory = source.substr(0, index + 1);
+    }
     Block* block = nullptr;
     bool isBlockFile = false;
-    for (uint32_t i = 0; i < lines.size(); ++i)
+    for (uint32_t lineNumber = 0; lineNumber < lines.size(); ++lineNumber)
     {
-      line = lines[i];
+      line = lines[lineNumber];
       if (block == nullptr)
       {
-        if ((i + 1) < lines.size())
+        if ((lineNumber + 1) < lines.size())
         {
-          string nextLine = lines[i + 1];
+          string nextLine = lines[lineNumber + 1];
           if (FileBlock::checkStart(line, nextLine))
           {
-            block = new FileBlock(source, i);
+            block = new FileBlock(rootDirectory, source, lineNumber);
             isBlockFile = true;
           }
           else if (CodeBlock::checkStart(line, nextLine))
           {
-            block = new CodeBlock(source, i);
+            block = new CodeBlock(source, lineNumber);
             isBlockFile = false;
           }
           if (block != nullptr)
           {
             if (!block->parseHeader(line))
             {
-              cout << "Error: Failed to parse block header in file \"" << source <<
-                "\" line " << to_string(i) << "." << endl;
+              cout << "Error: Failed to parse block header in line " <<
+                to_string(lineNumber) << " of file \"" << source << "\"." << endl;
               return false;
             }
-            i += 1;
+            lineNumber += 1;
             continue;
           }
         }
-
         if (block == nullptr)
         {
           regex linkRegEx("\\[\\w+\\]\\((.*?\\.md)\\)");
@@ -104,17 +102,21 @@ bool Parser::parse(std::string literateFile)
               string path = results[1];
               if ((path.rfind("http://", 0) != 0) &&
                 (path.rfind("https://", 0) != 0) &&
-                (path.rfind("ftp://", 0) != 0) &&
-                (fileBlocks.find(path) == fileBlocks.end()) &&
-                (codeBlocks.find(path) == codeBlocks.end()))
+                (path.rfind("ftp://", 0) != 0))
               {
-                unprocessedSources.push_back(path);
+                string fullPath = rootDirectory + path;
+                if ((find(unprocessedSources.begin(), unprocessedSources.end(),
+                  fullPath) == unprocessedSources.end()) && 
+                  (find(processedSources.begin(), processedSources.end(),
+                  fullPath) == processedSources.end()))
+                {
+                  unprocessedSources.push_back(fullPath);
+                }
               }
             }
             matchStart = results.suffix().first;
           }
         }
-
       }
       else
       {
@@ -123,19 +125,21 @@ bool Parser::parse(std::string literateFile)
           block->addLine(line);
           continue;
         }
-
         if (isBlockFile)
         {
-          if (fileBlocks.find(block->getName()) != fileBlocks.end())
+          auto existingBlockIt = fileBlocks.find(block->getName());
+          if (existingBlockIt != fileBlocks.end())
           {
+            FileBlock* existingBlock = existingBlockIt->second;
             cout << "Error: Duplicate file block \"" << block->getName() <<
-              "\" in file \"" << source << "\"." << endl;
+              "\" in line " << to_string(lineNumber) << " of file \"" << source <<
+              "\", previously encountered in line " << existingBlock->getSourceLine() <<
+              " of file \"" << existingBlock->getSourceFile() << "\"." << endl;
             return false;
           }
           fileBlocks.insert(make_pair(block->getName(),
             dynamic_cast<FileBlock*>(block)));
           block = nullptr;
-
         }
         else
         {
@@ -146,7 +150,8 @@ bool Parser::parse(std::string literateFile)
             if (it == codeBlocks.end())
             {
               cout << "Error: Cannot append to non-existent code block \"" <<
-                block->getName() << "\" in file \"" << source << "\"." << endl;
+                block->getName() << "\" in line " << to_string(lineNumber) <<
+                " of file \"" << source << "\"." << endl;
               return false;
             }
             CodeBlock* existingBlock = it->second;
@@ -164,23 +169,19 @@ bool Parser::parse(std::string literateFile)
             if (codeBlocks.find(block->getName()) != codeBlocks.end())
             {
               cout << "Error: Duplicate code block \"" << block->getName() <<
-                "\" in file \"" << source << "\"." << endl;
+                "\" in line " << to_string(lineNumber) << " of file \"" << source <<
+                "\"." << endl;
               return false;
             }
             codeBlocks.insert(make_pair(block->getName(),
               dynamic_cast<CodeBlock*>(block)));
             block = nullptr;
           }
-
         }
       }
     }
-
     unprocessedSources.pop_front();
     processedSources.push_back(source);
-
   }
   return true;
 }
-
-

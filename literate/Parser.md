@@ -97,20 +97,19 @@ map<string, CodeBlock*> Parser::getCodeBlocks()
 
 ## Parsing
 
-The code block below give an overview of the parsing process. Start by defining two arrays, one that will contain a list of literate files that need to be processed and another to keep track of files that have already been processed. We'll add new literate files to the first array as we encounter links to them and move them to the second array after they've been processed to avoid duplicating work.
-
-Each literate source is processed in four steps as outlined below.
+The code block below give an overview of the parsing process. Start by defining two containers, one that will contain a list of literate files that need to be processed and another to keep track of files that have already been processed. We'll add new literate files to the first array as we encounter links to them and move them to the second array after they've been processed to avoid duplicating work.
 
 @code [parser] Parse web
 ```cpp
 bool Parser::parse(std::string literateFile)
 {
-  list<string> unprocessedSources, processedSources;
+  deque<string> unprocessedSources, processedSources;
   unprocessedSources.push_back(literateFile);
   while (!unprocessedSources.empty())
   {
     @{[parser] Check if source exists}
     @{[parser] Read next source into memory}
+    @{[parser] Extract root directory}
     @{[parser] Parse source}
     @{[parser] Move source to processed list}
   }
@@ -130,6 +129,7 @@ if (!sourceStream.good())
   @{[parser] Move source to processed list}
   continue;
 }
+cout << "## Parsing file: " << source << endl;
 ```
 
 **Read source.** Read the entire source file into memory as a array of lines and close the stream.
@@ -145,6 +145,18 @@ while (getline(sourceStream, line))
 sourceStream.close();
 ```
 
+**Get root directory.** Extract the root of the source file's directory. This local root needs to be combined with any file blocks to get their full paths.
+
+@code [parser] Extract root directory
+```cpp
+string rootDirectory;
+size_t index = source.rfind("/");
+if (index != string::npos)
+{
+  rootDirectory = source.substr(0, index + 1);
+}
+```
+
 **Parse source.** The third step is the most involved: process all lines in the file, extract the file and code blocks, and remember any other literate sources that we encounter links to.
 
 Start by defining a *block* variable to keep track of the current file or code block that we are parsing and an *isBlockFile* flag to remember if it's a file or code block. Iterate over each line in the file and handle it differently depending on whether we're currently parsing a block or not.
@@ -153,9 +165,9 @@ Start by defining a *block* variable to keep track of the current file or code b
 ```cpp
 Block* block = nullptr;
 bool isBlockFile = false;
-for (uint32_t i = 0; i < lines.size(); ++i)
+for (uint32_t lineNumber = 0; lineNumber < lines.size(); ++lineNumber)
 {
-  line = lines[i];
+  line = lines[lineNumber];
   if (block == nullptr)
   {
     @{[parser] Handle start of block}
@@ -182,28 +194,28 @@ The code below is where we detect and handle the start of a new block. Check tha
 
 @code [parser] Handle start of block
 ```cpp
-if ((i + 1) < lines.size())
+if ((lineNumber + 1) < lines.size())
 {
-  string nextLine = lines[i + 1];
+  string nextLine = lines[lineNumber + 1];
   if (FileBlock::checkStart(line, nextLine))
   {
-    block = new FileBlock(source, i);
+    block = new FileBlock(rootDirectory, source, lineNumber);
     isBlockFile = true;
   }
   else if (CodeBlock::checkStart(line, nextLine))
   {
-    block = new CodeBlock(source, i);
+    block = new CodeBlock(source, lineNumber);
     isBlockFile = false;
   }
   if (block != nullptr)
   {
     if (!block->parseHeader(line))
     {
-      cout << "Error: Failed to parse block header in file \"" << source <<
-        "\" line " << to_string(i) << "." << endl;
+      cout << "Error: Failed to parse block header in line " <<
+        to_string(lineNumber) << " of file \"" << source << "\"." << endl;
       return false;
     }
-    i += 1;
+    lineNumber += 1;
     continue;
   }
 }
@@ -227,11 +239,16 @@ if (block == nullptr)
       string path = results[1];
       if ((path.rfind("http://", 0) != 0) &&
         (path.rfind("https://", 0) != 0) &&
-        (path.rfind("ftp://", 0) != 0) &&
-        (fileBlocks.find(path) == fileBlocks.end()) &&
-        (codeBlocks.find(path) == codeBlocks.end()))
+        (path.rfind("ftp://", 0) != 0))
       {
-        unprocessedSources.push_back(path);
+        string fullPath = rootDirectory + path;
+        if ((find(unprocessedSources.begin(), unprocessedSources.end(),
+          fullPath) == unprocessedSources.end()) && 
+          (find(processedSources.begin(), processedSources.end(),
+          fullPath) == processedSources.end()))
+        {
+          unprocessedSources.push_back(fullPath);
+        }
       }
     }
     matchStart = results.suffix().first;
@@ -256,10 +273,14 @@ Handle the end of a file block by making sure it has a unique name, appending it
 
 @code [parser] Handle end of file block
 ```cpp
-if (fileBlocks.find(block->getName()) != fileBlocks.end())
+auto existingBlockIt = fileBlocks.find(block->getName());
+if (existingBlockIt != fileBlocks.end())
 {
+  FileBlock* existingBlock = existingBlockIt->second;
   cout << "Error: Duplicate file block \"" << block->getName() <<
-    "\" in file \"" << source << "\"." << endl;
+    "\" in line " << to_string(lineNumber) << " of file \"" << source <<
+    "\", previously encountered in line " << existingBlock->getSourceLine() <<
+    " of file \"" << existingBlock->getSourceFile() << "\"." << endl;
   return false;
 }
 fileBlocks.insert(make_pair(block->getName(),
@@ -278,7 +299,8 @@ if (codeBlock->getAppend())
   if (it == codeBlocks.end())
   {
     cout << "Error: Cannot append to non-existent code block \"" <<
-      block->getName() << "\" in file \"" << source << "\"." << endl;
+      block->getName() << "\" in line " << to_string(lineNumber) <<
+      " of file \"" << source << "\"." << endl;
     return false;
   }
   CodeBlock* existingBlock = it->second;
@@ -296,7 +318,8 @@ else
   if (codeBlocks.find(block->getName()) != codeBlocks.end())
   {
     cout << "Error: Duplicate code block \"" << block->getName() <<
-      "\" in file \"" << source << "\"." << endl;
+      "\" in line " << to_string(lineNumber) << " of file \"" << source <<
+      "\"." << endl;
     return false;
   }
   codeBlocks.insert(make_pair(block->getName(),

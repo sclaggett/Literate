@@ -32,6 +32,8 @@ public:
   bool checkEnd(std::string line);
   void addLine(std::string line);
 
+  std::string getSourceFile();
+  uint32_t getSourceLine();
   std::string getName();
   std::vector<std::string> getLines();
 
@@ -114,6 +116,16 @@ Define getters for use by external classes.
 
 @code [block] Getters
 ```cpp
+string Block::getSourceFile()
+{
+  return sourceFile;
+}
+
+uint32_t Block::getSourceLine()
+{
+  return sourceLine;
+}
+
 string Block::getName()
 {
   return name;

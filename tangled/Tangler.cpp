@@ -6,9 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <regex>
-
 using namespace std;
-
 
 bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
     map<string, CodeBlock*> codeBlocks, string outputDirectory)
@@ -22,7 +20,6 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
     }
     tangledBlocks.insert(make_pair(it->first, output));
   }
-
   map<FileBlock*, vector<string>> outputFiles;
   for (auto it = fileBlocks.begin(); it != fileBlocks.end(); ++it)
   {
@@ -33,12 +30,10 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
     }
     outputFiles.insert(make_pair(it->second, output));
   }
-
   if (outputDirectory.back() != '/')
   {
     outputDirectory += "/";
   }
-
   for (auto it = outputFiles.begin(); it != outputFiles.end(); ++it)
   {
     string outputPath = outputDirectory + it->first->getName();
@@ -49,7 +44,6 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
       concatStream << *it << endl;
     }
     string outputString = concatStream.str();
-
     ifstream inStream(outputPath);
     if (inStream.good())
     {
@@ -61,7 +55,6 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
         continue;
       }
     }
-
     size_t position = outputPath.find("/", 0);
     while (position != string::npos)
     {
@@ -85,11 +78,9 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
       }
       position = outputPath.find("/", position + 1);
     }
-
     ofstream outStream(outputPath);
     outStream << outputString;
     outStream.close();
-
     if (it->first->getExecutable())
     {
       struct stat st;
@@ -107,12 +98,9 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
         return false;
       }
     }
-
   }
-
   return true;
 }
-
 
 bool Tangler::tangleBlock(Block* block, map<string, CodeBlock*> codeBlocks,
   vector<string>& output)
@@ -128,7 +116,6 @@ bool Tangler::tangleBlock(Block* block, map<string, CodeBlock*> codeBlocks,
       output.push_back(line);
       continue;
     }
-
     if (results.size() != 4)
     {
       cout << "Error: Unexpected results parsing line '" << line <<
@@ -137,7 +124,6 @@ bool Tangler::tangleBlock(Block* block, map<string, CodeBlock*> codeBlocks,
     }
     string whitespace = results[1];
     string name = results[2];
-
     vector<string> childOutput;
     bool found = false;
     auto tangledBlock = tangledBlocks.find(name);
@@ -146,7 +132,6 @@ bool Tangler::tangleBlock(Block* block, map<string, CodeBlock*> codeBlocks,
       childOutput = tangledBlock->second;
       found = true;
     }
-
     if (!found)
     {
       auto rawBlock = codeBlocks.find(name);
@@ -161,14 +146,10 @@ bool Tangler::tangleBlock(Block* block, map<string, CodeBlock*> codeBlocks,
       }
       tangledBlocks.insert(make_pair(rawBlock->first, childOutput));
     }
-
     for (auto it = childOutput.begin(); it != childOutput.end(); ++it)
     {
       output.push_back(whitespace + *it);
     }
-
   }
   return true;
 }
-
-

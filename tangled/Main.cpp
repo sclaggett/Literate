@@ -4,11 +4,8 @@
 #include "Parser.h"
 #include "Tangler.h"
 #include <iostream>
-
 using namespace std;
-
 #define LITERATE_VERSION "0.2"
-
 
 uint32_t Main::run(int argc, char** argv)
 {
@@ -19,8 +16,7 @@ uint32_t Main::run(int argc, char** argv)
     {"out", 'o', OPTPARSE_REQUIRED},
     {0}
   };
-
-  string outputDirectory;
+  string outputDirectory(".");
   int option;
   struct optparse options;
   optparse_init(&options, argv);
@@ -35,7 +31,6 @@ uint32_t Main::run(int argc, char** argv)
       cout << "  --help/-h      Show the help text." << endl;
       cout << "  --version/-v   Show the version number." << endl;
       cout << "  --out/-o DIR   Put the generated files in DIR." << endl;
-
       return 0;
   
     case 'v':
@@ -54,11 +49,9 @@ uint32_t Main::run(int argc, char** argv)
       cout << "  --help/-h      Show the help text." << endl;
       cout << "  --version/-v   Show the version number." << endl;
       cout << "  --out/-o DIR   Put the generated files in DIR." << endl;
-
       return -1;
     }
   }
-
   char* arg = optparse_arg(&options);
   if (arg == nullptr)
   {
@@ -69,28 +62,22 @@ uint32_t Main::run(int argc, char** argv)
     cout << "  --help/-h      Show the help text." << endl;
     cout << "  --version/-v   Show the version number." << endl;
     cout << "  --out/-o DIR   Put the generated files in DIR." << endl;
-
     return -1;
   }
   string literateFile = arg;
-
-
   Parser parser;
   if (!parser.parse(literateFile))
   {
     return -1;
   }
-
   Tangler tangler;
   if (!tangler.tangle(parser.getFileBlocks(), parser.getCodeBlocks(),
     outputDirectory))
   {
     return -1;
   }
-
   return 0;
 }
-
 
 int main(int argc, char** argv) 
 {
@@ -109,5 +96,3 @@ int main(int argc, char** argv)
   cout << "Fatal error: " << err << endl;
   return -1;
 }
-
-

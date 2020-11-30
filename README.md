@@ -25,7 +25,13 @@ This repository started as a fork of Zachary Yedidia's [*Literate*](https://gith
 
 **TODO**
 
-$ lit -t Index.md
+[Build](Build.md)
+
+$ lit -o ./tangled README.md
+$ cd ./tangled
+$ ./Build.sh
+$ cp build/lit /usr/local/bin
+
 
 ## Application
 
@@ -44,16 +50,13 @@ The list below gives a brief description of each class with links to the impleme
 
 ## Limitations
 
-**TODO**
-
-- [Build](Build.md)
-- [Optparse](literate/thirdparty/Optparse.md)
 
 Immature development tools.
 Learning curve.
 No "right" way.
 Most programmers aren't writers.
 
-- Port original error line number handling?
-- Warn of orphan code blocks
-- Trim whitespace when parsing blocks
+- Keep track of the directory root for each file that is being parsed and locate all child files based on that root.
+- Remember the file and line where (1) each code block is defined and (2) each file is linked from.
+- Update error handling to be more descriptive.
+

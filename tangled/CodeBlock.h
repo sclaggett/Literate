@@ -16,4 +16,3 @@ public:
 private:
   bool append;
 };
-

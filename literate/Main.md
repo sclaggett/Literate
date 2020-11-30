@@ -78,7 +78,7 @@ uint32_t Main::run(int argc, char** argv)
 }
 ```
 
-**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something as fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use [Optparse](thirdparty/Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
+**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something as fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use **TEMP** [Optparse](literate/thirdparty/Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
 
 The link above to *Optparse* has a dual purpose: it provides the human reader a path to the code and it lets the *Literate* preprocessor know that the file exists. *All literate source files must be accessible via links* from the root source file in order to be included in the tangled output.
 
@@ -110,11 +110,11 @@ struct optparse_long longopts[] =
 };
 ```
 
-Iterate over each command line argument and process it.
+Iterate over each command line argument and process it. The output directory defaults to the current directory if not specified.
 
 @code [main] Process arguments
 ```cpp
-string outputDirectory;
+string outputDirectory(".");
 int option;
 struct optparse options;
 optparse_init(&options, argv);
