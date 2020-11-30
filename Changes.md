@@ -29,7 +29,9 @@ if (count != sizeof(uint64_t))
 
 This produces ugly output when rendered as Markdown:
 
-![Missing: Code block](images/CodeBlock.png "Code block")
+<p align=center>
+  <img src="images/CodeBlock.png" width="70%" />
+</p>
 
 The solution to this problem is to modify *Literate* to use `` ``` `` as code block delimiters and to introduce the `@code` statement. The example above now becomes:
 

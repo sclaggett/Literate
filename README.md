@@ -17,7 +17,9 @@ There are several misconceptions around literate programming. First, some are un
 
 Donald Knuth developed literate programming back in late 70s and early 80s. A software application in his original system was written as a single *web* file and consisted of a mixture of English, TEX, and Pascal. This *web* file was processed by two applications, *tangle* and *weave*. The *tangle* application extracted the Pascal portions and combined them into a source file that could be compiled to obtain the executable, while *weave* processed the entire *web* file into a typeset file that could be rendered in a visually appealing format. The figure below is from Knuth's original paper and depicts this workflow:
 
-![Missing: Tangle and weave](images/TangleAndWeave.png "Tangle and weave")
+<p align=center>
+  <img src="images/TangleAndWeave.png" width="50%" />
+</p>
 
 This repository started as a fork of Zachary Yedidia's [*Literate*](https://github.com/zyedidia/Literate) application in which he extended and modernized Knuth's ideas through a number of new features such as writing the *web* files in [Markdown](https://daringfireball.net/projects/markdown/), adding support for languages other than Pascal, and supporting multiple input and output files. My version is a complete overhaul of Yedidia's original work to fit my development workflow. See the [changes](Changes.md) document for details on what was changed and why.
 
@@ -37,7 +39,9 @@ $ cp build/lit /usr/local/bin
 
 So what might a literate program actually look like in practice? Well, you're looking at one. This codebase, like Knuth's and Yedidia's, is written in the literate style. The current file contains the high-level documentation with links that allow the reader to drill down into the actual implementation files. The figure below shows the classes the application is composed of and their relationship to one another:
 
-![Missing: Overview](images/Overview.png "Overview")
+<p align=center>
+  <img src="images/Overview.png" width="50%" />
+</p>
 
 The list below gives a brief description of each class with links to the implementation files:
 
