@@ -6,7 +6,7 @@ The *Tangler* class contains the logic for tangling the file and code blocks int
 
 The sections below contain the header file and implementation overview for this class.
 
-@file source/Tangler.h
+@file Tangler.h
 ```cpp
 #pragma once
 
@@ -30,7 +30,7 @@ private:
 };
 ```
 
-@file source/Tangler.cpp
+@file Tangler.cpp
 ```cpp
 @{[tangler] Includes}
 @{[tangler] Namespaces}

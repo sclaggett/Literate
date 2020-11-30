@@ -1,4 +1,3 @@
 .DS_STORE
-Build.sh
-CMakeLists.txt
-build
+tangled/build
+

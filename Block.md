@@ -12,7 +12,7 @@ The function *parseHeader()* is abstract and must be implemented by derived clas
 
 The sections below contain the header file and implementation overview for this class.
 
-@file source/Block.h
+@file Block.h
 ```cpp
 #pragma once
 
@@ -45,7 +45,7 @@ protected:
 };
 ```
 
-@file source/Block.cpp
+@file Block.cpp
 ```cpp
 @{[block] Includes}
 @{[block] Namespaces}

@@ -1,6 +1,6 @@
 #include "Main.h"
 #define OPTPARSE_IMPLEMENTATION
-#include "thirdparty/Optparse.h"
+#include "Optparse.h"
 #include "Parser.h"
 #include "Tangler.h"
 #include <iostream>

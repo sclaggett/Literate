@@ -4,7 +4,7 @@
 
 This is a direct copy of [Optparse](https://github.com/skeeto/optparse), a portable drop-in replacement for *getopt()* that sports a permissible license.
 
-@file source/thirdparty/Optparse.h
+@file Optparse.h
 ```cpp
 /* Optparse --- portable, reentrant, embeddable, getopt-like option parser
  *

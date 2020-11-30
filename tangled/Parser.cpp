@@ -45,6 +45,7 @@ bool Parser::parse(std::string literateFile)
       processedSources.push_back(source);
       continue;
     }
+    cout << "## Parsing file: " << source << endl;
     vector<string> lines;
     string line;
     while (getline(sourceStream, line))

@@ -8,7 +8,7 @@ This file also includes the *main()* application entry point.
 
 The section below is the header file for the *Main* class. I've chosen to write header files as a single block in this project because they are quite simple. You can easily break more complicated header files up into multiple code blocks and intersperse explanations.
 
-@file source/Main.h
+@file Main.h
 ```cpp
 #pragma once
 
@@ -29,7 +29,7 @@ Of course, the lack of extraneous functions and comments is what I've found work
 
 The section below gives an overview of the implementation file. Again, my decision to start each literate file in this project with the header file and an overview of the implementation file is a matter of style--you can just as easily start by explaining various aspects of the class and pull everything together at the end.
 
-@file source/Main.cpp
+@file Main.cpp
 ```cpp
 @{[main] Includes}
 @{[main] Namespaces}
@@ -78,7 +78,7 @@ uint32_t Main::run(int argc, char** argv)
 }
 ```
 
-**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something as fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use **TEMP** [Optparse](literate/thirdparty/Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
+**Parse command line.** The first step is to parse the command line. It's sometimes surprising to me how complicated it is to do something as fundamental as argument parsing in C++ (yeah, I know, I switched away from D which comes with that functionality build in). Use [Optparse](Optparse.md) for a portable solution with an interface that is essentially identical to *getopt()*.
 
 The link above to *Optparse* has a dual purpose: it provides the human reader a path to the code and it lets the *Literate* preprocessor know that the file exists. *All literate source files must be accessible via links* from the root source file in order to be included in the tangled output.
 
@@ -200,7 +200,7 @@ Include the *Optparse*, *Parser*, and *Tanger* header files.
 @code [main] Includes +=
 ```cpp
 #define OPTPARSE_IMPLEMENTATION
-#include "thirdparty/Optparse.h"
+#include "Optparse.h"
 #include "Parser.h"
 #include "Tangler.h"
 ```

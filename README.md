@@ -41,12 +41,12 @@ So what might a literate program actually look like in practice? Well, you're lo
 
 The list below gives a brief description of each class with links to the implementation files:
 
-- [Main](literate/Main.md): The main application class that parses the command line arguments and uses the *Parser* and *Tangler* classes to process the web of literate files.
-- [Block](literate/Block.md): Abstract base class that encapsulates variables and functions common to the *FileBlock* and *CodeBlock* classes.
-- [FileBlock](literate/FileBlock.md): Encapsulates a single literate file block.
-- [CodeBlock](literate/CodeBlock.md): Encapsulates a single literate code block.
-- [Parser](literate/Parser.md): Contains logic for parsing the web of literate source files.
-- [Tangler](literate/Tangler.md): Tangles the file and code blocks into the output files.
+- [Main](Main.md): The main application class that parses the command line arguments and uses the *Parser* and *Tangler* classes to process the web of literate files.
+- [Block](Block.md): Abstract base class that encapsulates variables and functions common to the *FileBlock* and *CodeBlock* classes.
+- [FileBlock](FileBlock.md): Encapsulates a single literate file block.
+- [CodeBlock](CodeBlock.md): Encapsulates a single literate code block.
+- [Parser](Parser.md): Contains logic for parsing the web of literate source files.
+- [Tangler](Tangler.md): Tangles the file and code blocks into the output files.
 
 ## Limitations
 

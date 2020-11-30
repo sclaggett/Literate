@@ -8,7 +8,7 @@ This class is designed to load all source files into memory at once. I've chosen
 
 The sections below contain the header file and implementation overview for this class.
 
-@file source/Parser.h
+@file Parser.h
 ```cpp
 #pragma once
 
@@ -33,7 +33,7 @@ private:
 };
 ```
 
-@file source/Parser.cpp
+@file Parser.cpp
 ```cpp
 @{[parser] Includes}
 @{[parser] Namespaces}

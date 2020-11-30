@@ -18,7 +18,7 @@ The presence of the optional `+x` modifier indicates that the file should have t
 
 The sections below contain the header file and implementation overview for this class.
 
-@file source/FileBlock.h
+@file FileBlock.h
 ```cpp
 #pragma once
 
@@ -42,7 +42,7 @@ private:
 };
 ```
 
-@file source/FileBlock.cpp
+@file FileBlock.cpp
 ```cpp
 @{[fileblock] Includes}
 @{[fileblock] Namespaces}

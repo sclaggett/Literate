@@ -18,7 +18,7 @@ The presence of the optional `+=` modifier indicates that the code block should 
 
 The sections below contain the header file and implementation overview for this class.
 
-@file source/CodeBlock.h
+@file CodeBlock.h
 ```cpp
 #pragma once
 
@@ -40,7 +40,7 @@ private:
 };
 ```
 
-@file source/CodeBlock.cpp
+@file CodeBlock.cpp
 ```cpp
 @{[codeblock] Includes}
 @{[codeblock] Namespaces}
