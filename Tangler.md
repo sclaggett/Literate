@@ -1,6 +1,4 @@
 # Tangler
-@title TEMP
-@s TEMP
 
 The *Tangler* class contains the logic for tangling the file and code blocks into the ouput files. It is intended to be used by calling the *tangle()* function with the file and code blocks and output directory and it will generate all output files.
 

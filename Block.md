@@ -1,6 +1,4 @@
 # Block
-@title TEMP
-@s TEMP
 
 The *Block* class is an abstract base class that encapsulates variables and functions common to the *FileBlock* and *CodeBlock* classes. Three functions are defined for use when parsing blocks out of a literate file:
 

@@ -1,6 +1,4 @@
 # Optparse
-@title TEMP
-@s TEMP
 
 This is a direct copy of [Optparse](https://github.com/skeeto/optparse), a portable drop-in replacement for *getopt()* that sports a permissible license.
 

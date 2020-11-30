@@ -1,6 +1,4 @@
 # CodeBlock
-@title TEMP
-@s TEMP
 
 The *CodeBlock* class derives from the base *Block* class, encapsulates a single literate code block, and contains the associated parsing logic.
 

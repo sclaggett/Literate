@@ -1,6 +1,4 @@
 # FileBlock
-@title TEMP
-@s TEMP
 
 The *FileBlock* class derives from the base *Block* class, encapsulates a single literate file block, and contains the associated parsing logic.
 

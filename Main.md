@@ -1,6 +1,4 @@
 # Main
-@title TEMP
-@s TEMP
 
 The *Main* class parses the command line and uses the *Parser* and *Tangler* classes to process the web of literate files.
 

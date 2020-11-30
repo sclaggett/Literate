@@ -1,10 +1,8 @@
 # Build
-@title TEMP
-@s TEMP
 
 ## Building
 
-**TODO** Use `Build.sh` to build both applications for the Raspberry Pi and copy them to the device.
+The `Build.sh` script makes running CMake slightly easier.
 
 @file Build.sh +x
 ```sh

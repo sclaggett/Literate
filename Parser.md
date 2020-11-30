@@ -1,6 +1,4 @@
 # Parser
-@title TEMP
-@s TEMP
 
 The *Parser* class contains the logic for parsing the web of literate source files. It is intended to be used by calling the *parse()* function with the root literate file as the parameter and it will walk the web of all linked files. The parsed blocks can then be obtained using the *getFileBlocks()* and *getCodeBlocks()* functions.
 
