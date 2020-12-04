@@ -44,7 +44,7 @@ $ cd ./tangled
 $ ./Build.sh
 [Open solution in Visual Studio and go from there]
 $ mkdir /c/Tools
-$ cp ../build/Release/lit.exe /c/Tools
+$ cp ../build/Release/lit.exe /c/Users/shane/bin
 ```
 
 Development:
