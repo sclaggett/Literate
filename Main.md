@@ -15,7 +15,7 @@ The section below is the header file for the *Main* class. I've chosen to write 
 class Main
 {
 public:
-  uint32_t run(int argc, char** argv);
+  int32_t run(int argc, char** argv);
 };
 ```
 
@@ -67,7 +67,7 @@ The *run()* function is where the action happens. The entire *Literate* program 
 
 @code [main] Run
 ```cpp
-uint32_t Main::run(int argc, char** argv)
+int32_t Main::run(int argc, char** argv)
 {
   @{[main] Parse command line arguments}
   @{[main] Parse web}

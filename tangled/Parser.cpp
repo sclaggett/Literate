@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <iterator>

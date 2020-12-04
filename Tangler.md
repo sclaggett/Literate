@@ -162,8 +162,12 @@ while (position != string::npos)
   struct stat st;
   if (stat(directory.c_str(), &st) != 0)
   {
+#ifdef linux
     if (mkdir(directory.c_str(), S_IRWXU | S_IRGRP | S_IXGRP |
       S_IROTH | S_IXOTH) != 0)
+#elif _WIN32
+    if (!CreateDirectoryA(directory.c_str(), NULL))
+#endif
     {
       cout << "Error: Failed to create directory '" << directory <<
         "'." << endl;
@@ -189,10 +193,13 @@ outStream << outputString;
 outStream.close();
 ```
 
-Lastly, set the execute bit on the output file if the flag was set on the file block. On Linux this involves reading the current file permissions and writing a modified set.
+Lastly, set the execute bit on the output file if the flag was set on the file block. Do so by reading the current file permissions and writing a modified set.
+
+This is only relevant on Linux because Windows handles file permissions differently.
 
 @code [tangler] Set execute bit
 ```cpp
+#ifdef linux
 if (it->first->getExecutable())
 {
   struct stat st;
@@ -210,6 +217,7 @@ if (it->first->getExecutable())
     return false;
   }
 }
+#endif
 ```
 
 Append the includes necessary for the above code blocks.
@@ -221,7 +229,11 @@ Append the includes necessary for the above code blocks.
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
+#ifdef linux
+  #include <unistd.h>
+#elif _WIN32
+  #include "Windows.h"
+#endif
 ```
 
 ## Tangle block

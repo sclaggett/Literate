@@ -5,5 +5,5 @@
 class Main
 {
 public:
-  uint32_t run(int argc, char** argv);
+  int32_t run(int argc, char** argv);
 };

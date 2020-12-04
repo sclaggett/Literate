@@ -7,7 +7,7 @@
 using namespace std;
 #define LITERATE_VERSION "0.2"
 
-uint32_t Main::run(int argc, char** argv)
+int32_t Main::run(int argc, char** argv)
 {
   struct optparse_long longopts[] =
   {

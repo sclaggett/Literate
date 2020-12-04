@@ -337,6 +337,7 @@ Include the necessary headers.
 
 @code [parser] Includes +=
 ```cpp
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <iterator>

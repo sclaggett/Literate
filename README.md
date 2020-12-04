@@ -29,11 +29,31 @@ This repository started as a fork of Zachary Yedidia's [*Literate*](https://gith
 
 [Build](Build.md)
 
-$ lit -o ./tangled README.md
+Building on Mac:
+
+```sh
 $ cd ./tangled
 $ ./Build.sh
-$ cp build/lit /usr/local/bin
+$ cp ../build/lit /usr/local/bin
+```
 
+Building on Windows using Git Bash:
+
+```sh
+$ cd ./tangled
+$ ./Build.sh
+[Open solution in Visual Studio and go from there]
+$ mkdir /c/Tools
+$ cp ../build/Release/lit.exe /c/Tools
+```
+
+Development:
+
+Run the following any time you make changes to the Markdown files, prior to rebuilding. The command should be run from the root of the repository.
+
+```sh
+$ lit -o ./tangled README.md
+```
 
 ## Application
 

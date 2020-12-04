@@ -4,7 +4,11 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
+#ifdef linux
+  #include <unistd.h>
+#elif _WIN32
+  #include "Windows.h"
+#endif
 #include <regex>
 using namespace std;
 
@@ -62,8 +66,12 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
       struct stat st;
       if (stat(directory.c_str(), &st) != 0)
       {
+    #ifdef linux
         if (mkdir(directory.c_str(), S_IRWXU | S_IRGRP | S_IXGRP |
           S_IROTH | S_IXOTH) != 0)
+    #elif _WIN32
+        if (!CreateDirectoryA(directory.c_str(), NULL))
+    #endif
         {
           cout << "Error: Failed to create directory '" << directory <<
             "'." << endl;
@@ -81,6 +89,7 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
     ofstream outStream(outputPath);
     outStream << outputString;
     outStream.close();
+    #ifdef linux
     if (it->first->getExecutable())
     {
       struct stat st;
@@ -98,6 +107,7 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
         return false;
       }
     }
+    #endif
   }
   return true;
 }
