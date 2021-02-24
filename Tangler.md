@@ -162,7 +162,7 @@ while (position != string::npos)
   struct stat st;
   if (stat(directory.c_str(), &st) != 0)
   {
-#ifdef linux
+#if defined(__linux__) || defined(__APPLE__)
     if (mkdir(directory.c_str(), S_IRWXU | S_IRGRP | S_IXGRP |
       S_IROTH | S_IXOTH) != 0)
 #elif _WIN32
@@ -199,7 +199,7 @@ This is only relevant on Linux because Windows handles file permissions differen
 
 @code [tangler] Set execute bit
 ```cpp
-#ifdef linux
+#if defined(__linux__) || defined(__APPLE__)
 if (it->first->getExecutable())
 {
   struct stat st;
@@ -229,7 +229,7 @@ Append the includes necessary for the above code blocks.
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef linux
+#if defined(__linux__) || defined(__APPLE__)
   #include <unistd.h>
 #elif _WIN32
   #include "Windows.h"

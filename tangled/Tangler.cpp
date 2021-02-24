@@ -4,7 +4,7 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef linux
+#if defined(__linux__) || defined(__APPLE__)
   #include <unistd.h>
 #elif _WIN32
   #include "Windows.h"
@@ -66,7 +66,7 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
       struct stat st;
       if (stat(directory.c_str(), &st) != 0)
       {
-    #ifdef linux
+    #if defined(__linux__) || defined(__APPLE__)        
         if (mkdir(directory.c_str(), S_IRWXU | S_IRGRP | S_IXGRP |
           S_IROTH | S_IXOTH) != 0)
     #elif _WIN32
@@ -89,7 +89,7 @@ bool Tangler::tangle(map<string, FileBlock*> fileBlocks,
     ofstream outStream(outputPath);
     outStream << outputString;
     outStream.close();
-    #ifdef linux
+    #if defined(__linux__) || defined(__APPLE__)
     if (it->first->getExecutable())
     {
       struct stat st;
