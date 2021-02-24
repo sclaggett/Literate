@@ -4,6 +4,8 @@ project (lit)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   add_definitions(-Wall -std=c++11)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  add_definitions(-Wall -std=c++11)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   add_compile_options(/W3 /WX)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
